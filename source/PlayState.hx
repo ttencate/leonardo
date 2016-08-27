@@ -58,7 +58,7 @@ class PlayState extends FlxState {
       for (row in 0...puzzle.rows) {
         for (col in 0...puzzle.cols) {
           var square = new FlxSprite(S * col, S * row, AssetPaths.pattern_square__png);
-          square.color = puzzle.pattern[row][col];
+          square.color = puzzle.colorAt(col, row);
           pattern.add(square);
         }
       }
@@ -91,7 +91,7 @@ class PlayState extends FlxState {
 
   private function onRunClick() {
     if (runner == null) {
-      runner = new Runner(program, embroidery, needle, punchCards, help);
+      runner = new Runner(puzzle, program, embroidery, needle, punchCards, help);
       add(runner);
       enableInput(false);
     }

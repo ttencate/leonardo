@@ -10,6 +10,7 @@ class Runner extends FlxGroup {
   public var speed: Float = 1;
   public var done(get, never): Bool;
 
+  private var puzzle: Puzzle;
   private var program: Program;
   private var embroidery: Embroidery;
   private var needle: Needle;
@@ -25,8 +26,9 @@ class Runner extends FlxGroup {
   private var colHighlight: FlxSprite;
   private var text: String = "";
 
-  public function new(program: Program, embroidery: Embroidery, needle: Needle, punchCards: Array<PunchCard>, help: HelpText) {
+  public function new(puzzle: Puzzle, program: Program, embroidery: Embroidery, needle: Needle, punchCards: Array<PunchCard>, help: HelpText) {
     super();
+    this.puzzle = puzzle;
     this.program = program;
     this.embroidery = embroidery;
     this.needle = needle;
@@ -187,7 +189,11 @@ class Runner extends FlxGroup {
           switchState(NEXT_INSTRUCTION_END);
         }
       case NEXT_INSTRUCTION_END:
-        switchState(INSTRUCTION_START);
+        if (isSolved()) {
+          switchState(DONE, "Complete!");
+        } else {
+          switchState(INSTRUCTION_START);
+        }
       case DONE:
     }
 
@@ -203,6 +209,10 @@ class Runner extends FlxGroup {
 
   private function stateFraction(): Float {
     return totalTimeInState == 0 ? 1 : timeSpentInState / totalTimeInState;
+  }
+
+  public function isSolved(): Bool {
+    return embroidery.matches(puzzle);
   }
 }
 

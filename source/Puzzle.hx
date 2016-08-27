@@ -33,6 +33,10 @@ class Puzzle {
     }
   }
 
+  public function colorAt(col: Int, row: Int) {
+    return pattern[row][col];
+  }
+
   private function extractColors(bitmap: BitmapData): Array<FlxColor> {
     var colors = [];
     for (y in 0...bitmap.height) {

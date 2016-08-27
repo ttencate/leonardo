@@ -67,4 +67,18 @@ class Embroidery extends FlxSpriteGroup {
     }
     stitches = [for (row in 0...rows) [for (col in 0...cols) null]];
   }
+
+  public function matches(puzzle: Puzzle) {
+    if (this.rows != puzzle.rows || this.cols != puzzle.cols || puzzle.pattern == null) {
+      return false;
+    }
+    for (row in 0...rows) {
+      for (col in 0...cols) {
+        if (stitchAt(col, row) == null || stitchAt(col, row) != puzzle.colorAt(col, row)) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
 }
