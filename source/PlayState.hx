@@ -18,6 +18,7 @@ class PlayState extends FlxState {
   private var needle: Needle;
   private var help: HelpText;
   private var punchCards: Array<PunchCard>;
+  private var wheels: Array<Wheel>;
 
   private var runStopButton: FlxUISpriteButton;
   private var speedButtons: Array<FlxUISpriteButton>;
@@ -98,6 +99,14 @@ class PlayState extends FlxState {
       add(punchCard);
       punchCards.push(punchCard);
     }
+
+    wheels = [];
+    for (i in 0...2) {
+      var wheel = new Wheel(FlxG.width + 80, FlxG.height - 256 + 128 * i);
+      add(wheel);
+      wheels.push(wheel);
+    }
+    add(new FlxSprite(FlxG.width - 128, FlxG.height - 384, AssetPaths.wheels_overlay__png));
   }
 
   override public function update(elapsed: Float) {

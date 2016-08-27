@@ -11,7 +11,7 @@ class Main extends Sprite {
   public function new() {
     super();
     addChild(new FlxGame(0, 0, null, 1, 60, 60, true));
-    var sandbox = new Puzzle(3, 92, null);
+    var sandbox = new Puzzle(3, 84, null);
     var puzzle4 = new Puzzle(2, 16, AssetPaths.puzzle04__png);
     FlxG.switchState(new PlayState(sandbox));
 
