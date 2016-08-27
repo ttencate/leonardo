@@ -44,6 +44,19 @@
          stdDeviation="3.36"
          id="feGaussianBlur8239" />
     </filter>
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter9696"
+       x="-0.0285"
+       width="1.057"
+       y="-0.020727273"
+       height="1.0414545">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="3.04"
+         id="feGaussianBlur9698" />
+    </filter>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -52,9 +65,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1"
-     inkscape:cx="740.43286"
-     inkscape:cy="554.9816"
+     inkscape:zoom="2.8284271"
+     inkscape:cx="186.83066"
+     inkscape:cy="516.93047"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -103,6 +116,22 @@
        y="284.36218"
        ry="8.6913997e-06" />
     <rect
+       style="opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter9696)"
+       id="rect9690"
+       width="272"
+       height="352"
+       x="0"
+       y="284.36218"
+       ry="7.9671163e-06" />
+    <rect
+       ry="7.9671163e-06"
+       y="284.36218"
+       x="0"
+       height="352"
+       width="272"
+       id="rect9688"
+       style="opacity:1;fill:#483e37;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <rect
        style="opacity:1;fill:#483e37;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect5326"
        width="1024"
@@ -142,5 +171,13 @@
        x="656"
        y="300.36218"
        ry="8.6913997e-06" />
+    <rect
+       style="opacity:0.5;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect10371"
+       width="160"
+       height="63.999992"
+       x="96"
+       y="556.36218"
+       ry="7.695312e-06" />
   </g>
 </svg>

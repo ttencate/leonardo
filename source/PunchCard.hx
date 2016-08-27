@@ -25,8 +25,11 @@ class PunchCard extends FlxSpriteGroup {
 
   private var colHighlight: FlxSprite;
   private var rowHighlight: FlxSprite;
+  private var colorHighlight: FlxSprite;
 
   private var holes: Array<FlxSprite>;
+
+  private var swatch: FlxSprite;
 
   public function new(program: Program, number: Int, help: HelpText) {
     super();
@@ -51,6 +54,15 @@ class PunchCard extends FlxSpriteGroup {
     add(rowHighlight);
 
     holes = [for (i in 0...(rows*cols)) null];
+
+    swatch = new ColorSprite(30, 30, FlxColor.WHITE);
+    swatch.color = program.colors[program.colorIndices[number]];
+    swatch.setPosition(14, 40);
+    add(swatch);
+
+    colorHighlight = new ColorSprite(40, 40, highlightColor);
+    colorHighlight.setPosition(9, 35);
+    add(colorHighlight);
   }
 
   public function makeColHighlight(): FlxSprite {
@@ -61,8 +73,10 @@ class PunchCard extends FlxSpriteGroup {
     if (!inputEnabled) {
       colHighlight.visible = false;
       rowHighlight.visible = false;
+      colorHighlight.visible = false;
       return;
     }
+
     var x = FlxG.mouse.x;
     var y = FlxG.mouse.y;
     var col = Math.floor((x - this.x - paddingX) / holeWidth);
@@ -80,6 +94,17 @@ class PunchCard extends FlxSpriteGroup {
       colHighlight.visible = false;
       rowHighlight.visible = false;
     }
+
+    var ch = colorHighlight;
+    if (x >= ch.x && x < ch.x + ch.width && y >= ch.y && y < ch.y + ch.height) {
+      colorHighlight.visible = true;
+      colorHighlight.alpha = FlxG.mouse.pressed ? 0.5 : 1.0;
+      if (FlxG.mouse.justPressed) {
+        cycleColor();
+      }
+    } else {
+      colorHighlight.visible = false;
+    }
   }
 
   private function toggleHole(col: Int, row: Int) {
@@ -94,5 +119,10 @@ class PunchCard extends FlxSpriteGroup {
       add(hole);
       program.cards[number][col].holes[row] = true;
     }
+  }
+
+  private function cycleColor() {
+    program.colorIndices[number] = (program.colorIndices[number] + 1) % program.colors.length;
+    swatch.color = program.getThreadColor(number);
   }
 }

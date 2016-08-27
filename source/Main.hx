@@ -11,12 +11,14 @@ class Main extends Sprite {
   public function new() {
     super();
     addChild(new FlxGame(0, 0, null, 1, 60, 60, true));
-    FlxG.switchState(new PlayState(new Puzzle(2, 16, AssetPaths.puzzle04__png)));
+    var sandbox = new Puzzle(3, 92, null);
+    var puzzle4 = new Puzzle(2, 16, AssetPaths.puzzle04__png);
+    FlxG.switchState(new PlayState(sandbox));
 
     FlxG.plugins.add(new FlxMouseEventManager());
     FlxG.mouse.useSystemCursor = true;
 #if neko
-    FlxG.resizeWindow(FlxG.width, FlxG.height);
+    FlxG.resizeWindow(Math.round(FlxG.width * FlxG.camera.zoom), Math.round(FlxG.height * FlxG.camera.zoom));
     FlxG.plugins.add(new DebugKeys());
 #end
   }

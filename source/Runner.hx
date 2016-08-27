@@ -93,7 +93,7 @@ class Runner extends FlxGroup {
             needle.col >= 0 && needle.col < embroidery.cols &&
             needle.row >= 0 && needle.row < embroidery.rows &&
             embroidery.stitchAt(needle.col, needle.row) == null) {
-          var stitch = embroidery.addStitch(needle.col, needle.row, FlxColor.RED);
+          var stitch = embroidery.addStitch(needle.col, needle.row, program.getThreadColor(currentCard));
           switchState(STITCH(stitch), 1.0, "Stitching...");
         } else {
           switchState(STITCH_END);

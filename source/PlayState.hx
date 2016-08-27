@@ -19,7 +19,11 @@ class PlayState extends FlxState {
   private var help: HelpText;
   private var punchCards: Array<PunchCard>;
 
+  private var runStopButton: FlxUISpriteButton;
+  private var speedButtons: Array<FlxUISpriteButton>;
+
   private var runner: Runner;
+  private var speed: Float = 1;
 
   public function new(puzzle: Puzzle) {
     super();
@@ -29,22 +33,33 @@ class PlayState extends FlxState {
   override public function create() {
     super.create();
 
-    this.program = new Program(puzzle.numCards, puzzle.cardSize);
+    this.program = new Program(puzzle.numCards, puzzle.cardSize, puzzle.colors);
 
     add(new FlxSprite(AssetPaths.background__png));
 
-    var runButton = new FlxUISpriteButton(16, 272, new FlxSprite(AssetPaths.run__png), onRunClick);
-    runButton.loadGraphicsUpOverDown(AssetPaths.square_button__png);
-    runButton.labelOffsets[2].set(1, 1);
-    add(runButton);
-    var stopButton = new FlxUISpriteButton(96, 272, new FlxSprite(AssetPaths.stop__png), onStopClick);
-    stopButton.loadGraphicsUpOverDown(AssetPaths.square_button__png);
-    stopButton.labelOffsets[2].set(1, 1);
-    add(stopButton);
+    runStopButton = new FlxUISpriteButton(16, 272, new FlxSprite(AssetPaths.run__png), onRunStopClick);
+    runStopButton.loadGraphicsUpOverDown(AssetPaths.square_button__png);
+    runStopButton.labelOffsets[2].set(1, 1);
+    add(runStopButton);
+
+    speedButtons = [];
+    for (i in 0...4) {
+      var speedButton = new FlxUISpriteButton(96 + 40 * i, 272, new FlxSprite([
+        AssetPaths.speed_0__png,
+        AssetPaths.speed_1__png,
+        AssetPaths.speed_2__png,
+        AssetPaths.speed_3__png,
+      ][i]), function() { onSpeedButtonClick(i); });
+      speedButton.loadGraphicsUpOverDown(AssetPaths.speed_button__png, true);
+      speedButton.labelOffsets[2].set(1, 1);
+      add(speedButton);
+      speedButtons.push(speedButton);
+    }
+    speedButtons[1].toggled = true;
 
     embroidery = new Embroidery(puzzle);
-    embroidery.x = 256;
-    embroidery.y = (352 - embroidery.height) / 2;
+    embroidery.x = 464 - embroidery.width / 2;
+    embroidery.y = 176 - embroidery.height / 2;
     add(embroidery);
 
     if (puzzle.patternAsset != null) {
@@ -89,21 +104,30 @@ class PlayState extends FlxState {
     super.update(elapsed);
   }
 
-  private function onRunClick() {
+  private function onRunStopClick() {
     if (runner == null) {
+      runStopButton.label = new FlxSprite(AssetPaths.stop__png);
       runner = new Runner(puzzle, program, embroidery, needle, punchCards, help);
+      runner.speed = speed;
       add(runner);
       enableInput(false);
-    }
-    runner.speed = 1;
-  }
-
-  private function onStopClick() {
-    if (runner != null) {
+    } else {
+      runStopButton.label = new FlxSprite(AssetPaths.run__png);
       runner.reset();
       remove(runner);
       runner = null;
       enableInput(true);
+    }
+  }
+
+  private function onSpeedButtonClick(button: Int) {
+    for (speedButton in speedButtons) {
+      speedButton.toggled = false;
+    }
+    speedButtons[button].toggled = true;
+    speed = [0.0, 1.0, 3.0, 10.0][button];
+    if (runner != null) {
+      runner.speed = speed;
     }
   }
 
