@@ -19,10 +19,10 @@ class Needle extends FlxSpriteGroup {
     sprite.offset.set(128, 384);
     add(sprite);
 
-    setPos(embroidery.stitchX(col), embroidery.stitchY(row));
+    setEmbroideryPos(0, 0);
   }
 
-  public function setPos(x: Float, y: Float) {
-    sprite.setPosition(x, y);
+  public function setEmbroideryPos(x: Float, y: Float) {
+    sprite.setPosition(embroidery.stitchX(x), embroidery.stitchY(y));
   }
 }

@@ -2,6 +2,7 @@ package;
 
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
+import flixel.util.FlxColor;
 
 class Embroidery extends FlxSpriteGroup {
 
@@ -10,6 +11,8 @@ class Embroidery extends FlxSpriteGroup {
 
   private var weaveWidth: Float;
   private var weaveHeight: Float;
+
+  private var stitches: Array<FlxSprite> = [];
 
   public function new(cols: Int, rows: Int) {
     super();
@@ -31,11 +34,26 @@ class Embroidery extends FlxSpriteGroup {
     }
   }
 
-  public function stitchX(col: Int): Float {
+  public function stitchX(col: Float): Float {
     return x + weaveWidth * (col + 0.5);
   }
 
-  public function stitchY(row: Int): Float {
+  public function stitchY(row: Float): Float {
     return y + weaveHeight * (row + 0.5);
+  }
+
+  public function addStitch(col: Int, row: Int, color: FlxColor): FlxSprite {
+    var stitch = new FlxSprite(weaveWidth * col, weaveHeight * row, AssetPaths.stitch__png);
+    stitch.color = color;
+    add(stitch);
+    stitches.push(stitch);
+    return stitch;
+  }
+
+  public function removeAllStitches() {
+    for (stitch in stitches) {
+      remove(stitch);
+    }
+    stitches = [];
   }
 }
