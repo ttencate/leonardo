@@ -17,10 +17,9 @@ class PunchCard extends FlxSpriteGroup {
 
   public var paddingX(default, null): Float = 94;
   public var paddingY(default, null): Float = 0;
-  private var rows: Int = 11;
-  private var cols: Int = 92;
+  private var rows: Int;
+  private var cols: Int;
 
-  private var holeSprite: FlxSprite;
   public var holeWidth(default, null): Int;
   public var holeHeight(default, null): Int;
 
@@ -34,13 +33,15 @@ class PunchCard extends FlxSpriteGroup {
     this.program = program;
     this.number = number;
     this.help = help;
+    this.rows = program.cards[number][0].holes.length;
+    this.cols = program.cardSize;
 
-    var background = new FlxSprite(AssetPaths.punch_card__png);
-    add(background);
-
-    holeSprite = new FlxSprite(AssetPaths.hole__png);
+    var holeSprite = new FlxSprite(AssetPaths.hole__png);
     holeWidth = Math.ceil(holeSprite.width);
     holeHeight = Math.ceil(holeSprite.height);
+
+    add(new FlxSprite(AssetPaths.punch_card__png));
+    add(new FlxSprite(paddingX + program.cardSize * holeWidth, 0, AssetPaths.punch_card_right__png));
 
     colHighlight = makeColHighlight();
     colHighlight.y = paddingY;
@@ -64,8 +65,8 @@ class PunchCard extends FlxSpriteGroup {
     }
     var x = FlxG.mouse.x;
     var y = FlxG.mouse.y;
-    var col = Math.floor((x - this.x - paddingX) / holeSprite.width);
-    var row = Math.floor((y - this.y - paddingY) / holeSprite.height);
+    var col = Math.floor((x - this.x - paddingX) / holeWidth);
+    var row = Math.floor((y - this.y - paddingY) / holeHeight);
     if (col >= 0 && col < cols && row >= 0 && row < rows) {
       colHighlight.visible = true;
       rowHighlight.visible = true;

@@ -14,10 +14,10 @@ class Embroidery extends FlxSpriteGroup {
 
   private var stitches: Array<Array<FlxSprite>>;
 
-  public function new(cols: Int, rows: Int) {
+  public function new(puzzle: Puzzle) {
     super();
-    this.cols = cols;
-    this.rows = rows;
+    this.cols = puzzle.cols;
+    this.rows = puzzle.rows;
 
     this.stitches = [for (row in 0...rows) [for (col in 0...cols) null]];
 

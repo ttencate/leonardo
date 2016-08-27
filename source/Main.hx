@@ -11,7 +11,7 @@ class Main extends Sprite {
   public function new() {
     super();
     addChild(new FlxGame(0, 0, null, 1, 60, 60, true));
-    FlxG.switchState(new PlayState(new Program(3, 92)));
+    FlxG.switchState(new PlayState(new Puzzle(2, 16, AssetPaths.puzzle04__png)));
 
     FlxG.plugins.add(new FlxMouseEventManager());
     FlxG.mouse.useSystemCursor = true;

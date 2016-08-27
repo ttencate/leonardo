@@ -31,6 +31,19 @@
          stdDeviation="2.64"
          id="feGaussianBlur5355" />
     </filter>
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter8237"
+       x="-0.022909091"
+       width="1.0458182"
+       y="-0.0252"
+       height="1.0504">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="3.36"
+         id="feGaussianBlur8239" />
+    </filter>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -40,8 +53,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1"
-     inkscape:cx="539.14646"
-     inkscape:cy="343.05403"
+     inkscape:cx="740.43286"
+     inkscape:cy="554.9816"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -113,5 +126,21 @@
        x="0"
        y="636.36218"
        ry="1.36924e-05" />
+    <rect
+       ry="8.6913997e-06"
+       y="302.36218"
+       x="658"
+       height="320"
+       width="352"
+       id="rect8223"
+       style="opacity:0.5;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter8237)" />
+    <rect
+       style="opacity:1;fill:#e3dedb;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect8219"
+       width="352"
+       height="320"
+       x="656"
+       y="300.36218"
+       ry="8.6913997e-06" />
   </g>
 </svg>

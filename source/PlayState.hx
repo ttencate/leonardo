@@ -3,11 +3,14 @@ package;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxMath;
 import flixel.addons.ui.FlxUISpriteButton;
 import flixel.util.FlxColor;
 
 class PlayState extends FlxState {
+
+  private var puzzle: Puzzle;
 
   private var program: Program;
 
@@ -18,13 +21,15 @@ class PlayState extends FlxState {
 
   private var runner: Runner;
 
-  public function new(program: Program) {
+  public function new(puzzle: Puzzle) {
     super();
-    this.program = program;
+    this.puzzle = puzzle;
   }
 
   override public function create() {
     super.create();
+
+    this.program = new Program(puzzle.numCards, puzzle.cardSize);
 
     add(new FlxSprite(AssetPaths.background__png));
 
@@ -37,10 +42,24 @@ class PlayState extends FlxState {
     stopButton.labelOffsets[2].set(1, 1);
     add(stopButton);
 
-    embroidery = new Embroidery(4, 4);
+    embroidery = new Embroidery(puzzle);
     embroidery.x = 256;
     embroidery.y = (352 - embroidery.height) / 2;
     add(embroidery);
+
+    if (puzzle.patternAsset != null) {
+      var pattern = new FlxSpriteGroup(832, 176);
+      var S = 24;
+      for (row in 0...puzzle.rows) {
+        for (col in 0...puzzle.cols) {
+          var square = new FlxSprite(S * col, S * row, AssetPaths.pattern_square__png);
+          square.color = puzzle.pattern[row][col];
+          pattern.add(square);
+        }
+      }
+      pattern.offset.set(pattern.width / 2, pattern.height / 2);
+      add(pattern);
+    }
 
     needle = new Needle(embroidery);
     add(needle);
