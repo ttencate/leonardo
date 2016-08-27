@@ -22,10 +22,12 @@ class Embroidery extends FlxSpriteGroup {
       var x: Float = 0;
       for (col in 0...cols) {
         weave = new FlxSprite(x, y, AssetPaths.weave__png);
-        x += weaveWidth = weave.width;
+        weaveWidth = weave.width;
+        weaveHeight = weave.height;
+        x += weaveWidth;
         add(weave);
       }
-      y += weaveHeight = weave.height;
+      y += weaveHeight;
     }
   }
 

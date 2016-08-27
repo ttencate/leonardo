@@ -9,6 +9,8 @@ class PunchCard extends FlxSpriteGroup {
 
   private static inline var highlightColor = 0x80ffffff;
 
+  public var inputEnabled: Bool = true;
+
   private var program: Program;
   private var number: Int;
   private var help: HelpText;
@@ -51,6 +53,11 @@ class PunchCard extends FlxSpriteGroup {
   }
 
   override public function update(elapsed: Float) {
+    if (!inputEnabled) {
+      colHighlight.visible = false;
+      rowHighlight.visible = false;
+      return;
+    }
     var x = FlxG.mouse.x;
     var y = FlxG.mouse.y;
     var col = Math.floor((x - this.x - paddingX) / holeSprite.width);

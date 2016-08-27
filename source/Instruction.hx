@@ -3,11 +3,15 @@ package;
 using StringTools;
 
 class Instruction {
+
   public var up(get, never): Bool;
   public var down(get, never): Bool;
   public var left(get, never): Bool;
   public var right(get, never): Bool;
   public var stitch(get, never): Bool;
+
+  public var colDelta(get, never): Int;
+  public var rowDelta(get, never): Int;
 
   public var holes(default, null): Array<Bool> = [for (i in 0...11) false];
 
@@ -19,6 +23,9 @@ class Instruction {
   private function get_left(): Bool { return holes[8] && !holes[9]; }
   private function get_right(): Bool { return holes[9] && !holes[8]; }
   private function get_stitch(): Bool { return holes[10]; }
+
+  private function get_colDelta(): Int { return left ? -1 : right ? 1 : 0; }
+  private function get_rowDelta(): Int { return up ? -1 : down ? 1 : 0; }
 
   public function toString() {
     var text = "";
