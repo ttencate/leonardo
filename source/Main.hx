@@ -3,15 +3,20 @@ package;
 import flixel.FlxBasic;
 import flixel.FlxG;
 import flixel.FlxGame;
+import flixel.input.mouse.FlxMouseEventManager;
 import openfl.Lib;
 import openfl.display.Sprite;
 
 class Main extends Sprite {
   public function new() {
     super();
-    addChild(new FlxGame(0, 0, PlayState, 1, 60, 60, true));
+    addChild(new FlxGame(0, 0, null, 1, 60, 60, true));
+    FlxG.switchState(new PlayState(new Program(3, 92)));
+
+    FlxG.plugins.add(new FlxMouseEventManager());
     FlxG.mouse.useSystemCursor = true;
 #if neko
+    FlxG.resizeWindow(FlxG.width, FlxG.height);
     FlxG.plugins.add(new DebugKeys());
 #end
   }
