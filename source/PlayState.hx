@@ -52,12 +52,17 @@ class PlayState extends FlxState {
       var S = 24;
       for (row in 0...puzzle.rows) {
         for (col in 0...puzzle.cols) {
+          pattern.add(new FlxSprite(S * col, S * row, AssetPaths.pattern_square_outline__png));
+        }
+      }
+      for (row in 0...puzzle.rows) {
+        for (col in 0...puzzle.cols) {
           var square = new FlxSprite(S * col, S * row, AssetPaths.pattern_square__png);
           square.color = puzzle.pattern[row][col];
           pattern.add(square);
         }
       }
-      pattern.offset.set(pattern.width / 2, pattern.height / 2);
+      pattern.offset.set((pattern.width - 1) / 2, (pattern.height - 1) / 2);
       add(pattern);
     }
 
