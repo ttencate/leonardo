@@ -15,6 +15,7 @@ class Runner extends FlxGroup {
   private var embroidery: Embroidery;
   private var needle: Needle;
   private var punchCards: Array<PunchCard>;
+  private var wheels: Array<Wheel>;
   private var help: HelpText;
 
   private var state: State = INSTRUCTION_START;
@@ -26,13 +27,14 @@ class Runner extends FlxGroup {
   private var colHighlight: FlxSprite;
   private var text: String = "";
 
-  public function new(puzzle: Puzzle, program: Program, embroidery: Embroidery, needle: Needle, punchCards: Array<PunchCard>, help: HelpText) {
+  public function new(puzzle: Puzzle, program: Program, embroidery: Embroidery, needle: Needle, punchCards: Array<PunchCard>, wheels: Array<Wheel>, help: HelpText) {
     super();
     this.puzzle = puzzle;
     this.program = program;
     this.embroidery = embroidery;
     this.needle = needle;
     this.punchCards = punchCards;
+    this.wheels = wheels;
     this.help = help;
 
     colHighlight = punchCards[0].makeColHighlight();
@@ -49,6 +51,11 @@ class Runner extends FlxGroup {
     needle.setEmbroideryPos(needle.col, needle.row);
 
     embroidery.removeAllStitches();
+
+    for (wheel in wheels) {
+      wheel.value = 0;
+      wheel.moveToValue(0);
+    }
   }
 
   private function setColHighlightPos(card: Float, instruction: Float) {
@@ -87,6 +94,22 @@ class Runner extends FlxGroup {
     var instruction = program.cards[currentCard][currentInstruction];
     switch (state) {
       case INSTRUCTION_START:
+        switchState(WHEEL_CHANGE_START);
+      case WHEEL_CHANGE_START:
+        if (instruction.increment || instruction.decrement) {
+          var newValue = wheels[instruction.wheel].value + instruction.wheelDelta;
+          switchState(WHEEL_CHANGE(newValue), 1.0, instruction.increment ? "Incrementing..." : "Decrementing...");
+        } else {
+          switchState(WHEEL_CHANGE_END);
+        }
+      case WHEEL_CHANGE(newValue):
+        var wheel = wheels[instruction.wheel];
+        wheel.moveToValue(FlxMath.lerp(wheel.value, newValue, stateFraction));
+        if (stateDone) {
+          wheel.value = newValue;
+          switchState(WHEEL_CHANGE_END);
+        }
+      case WHEEL_CHANGE_END:
         switchState(STITCH_START);
       case STITCH_START:
         if (instruction.stitch &&
@@ -210,6 +233,9 @@ class Runner extends FlxGroup {
 
 enum State {
   INSTRUCTION_START;
+  WHEEL_CHANGE_START;
+  WHEEL_CHANGE(newValue: Int);
+  WHEEL_CHANGE_END;
   STITCH_START;
   STITCH(sprite: FlxSprite);
   STITCH_END;

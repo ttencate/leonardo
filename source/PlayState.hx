@@ -116,7 +116,7 @@ class PlayState extends FlxState {
   private function onRunStopClick() {
     if (runner == null) {
       runStopButton.label = new FlxSprite(AssetPaths.stop__png);
-      runner = new Runner(puzzle, program, embroidery, needle, punchCards, help);
+      runner = new Runner(puzzle, program, embroidery, needle, punchCards, wheels, help);
       runner.speed = speed;
       add(runner);
       enableInput(false);
