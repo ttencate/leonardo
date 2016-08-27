@@ -21,6 +21,7 @@ class Runner extends FlxGroup {
   private var timeSpentInState: Float = 0;
   private var currentCard: Int = 0;
   private var currentInstruction: Int = 0;
+  private var stepDirection: Int = 1;
   private var colHighlight: FlxSprite;
   private var text: String = "";
 
@@ -84,25 +85,6 @@ class Runner extends FlxGroup {
     var instruction = program.cards[currentCard][currentInstruction];
     switch (state) {
       case INSTRUCTION_START:
-        switchState(MOVE_NEEDLE_START);
-      case MOVE_NEEDLE_START:
-        if (instruction.up || instruction.down || instruction.left || instruction.right) {
-          var fromX = needle.col;
-          var fromY = needle.row;
-          needle.col += instruction.colDelta;
-          needle.row += instruction.rowDelta;
-          switchState(MOVE_NEEDLE(fromX, fromY, needle.col, needle.row), 1.0, "Moving...");
-        } else {
-          switchState(MOVE_NEEDLE_END);
-        }
-      case MOVE_NEEDLE(fromX, fromY, toX, toY):
-        needle.setEmbroideryPos(
-            FlxMath.lerp(fromX, toX, stateFraction),
-            FlxMath.lerp(fromY, toY, stateFraction));
-        if (stateDone) {
-          switchState(MOVE_NEEDLE_END);
-        }
-      case MOVE_NEEDLE_END:
         switchState(STITCH_START);
       case STITCH_START:
         if (instruction.stitch) {
@@ -150,21 +132,61 @@ class Runner extends FlxGroup {
           switchState(STITCH_END);
         }
       case STITCH_END:
+        switchState(MOVE_NEEDLE_START);
+      case MOVE_NEEDLE_START:
+        if (instruction.move) {
+          var fromX = needle.col;
+          var fromY = needle.row;
+          needle.col += instruction.colDelta;
+          needle.row += instruction.rowDelta;
+          switchState(MOVE_NEEDLE(fromX, fromY, needle.col, needle.row), 1.0, "Moving...");
+        } else {
+          switchState(MOVE_NEEDLE_END);
+        }
+      case MOVE_NEEDLE(fromX, fromY, toX, toY):
+        needle.setEmbroideryPos(
+            FlxMath.lerp(fromX, toX, stateFraction),
+            FlxMath.lerp(fromY, toY, stateFraction));
+        if (stateDone) {
+          switchState(MOVE_NEEDLE_END);
+        }
+      case MOVE_NEEDLE_END:
         switchState(NEXT_INSTRUCTION_START);
       case NEXT_INSTRUCTION_START:
-        var prevCard = currentCard;
-        var prevInstruction = currentInstruction;
-        currentInstruction++;
-        if (currentInstruction >= program.cardSize) {
-          switchState(DONE, "Done");
-        } else {
-          switchState(NEXT_INSTRUCTION(prevCard, prevInstruction), 0.5);
+        var nextStepDirection = stepDirection;
+        if (instruction.jump && (instruction.left || instruction.right)) {
+          nextStepDirection = instruction.colDelta;
         }
-      case NEXT_INSTRUCTION(prevCard, prevInstruction):
+        if (instruction.jump && instruction.up) {
+          var nextCard = currentCard - 1;
+          if (nextCard < 0) {
+            switchState(DONE, "Error: cannot jump up from here");
+          } else {
+            switchState(NEXT_INSTRUCTION(nextCard, currentInstruction, nextStepDirection), 0.5);
+          }
+        } else if (instruction.jump && instruction.down) {
+          var nextCard = currentCard + 1;
+          if (nextCard >= program.numCards) {
+            switchState(DONE, "Error: cannot jump down from here");
+          } else {
+            switchState(NEXT_INSTRUCTION(nextCard, currentInstruction, nextStepDirection), 0.5);
+          }
+        } else {
+          var nextInstruction = currentInstruction + nextStepDirection;
+          if (nextInstruction < 0 || nextInstruction >= program.cardSize) {
+            switchState(DONE, "Done");
+          } else {
+            switchState(NEXT_INSTRUCTION(currentCard, nextInstruction, nextStepDirection), 0.5);
+          }
+        }
+      case NEXT_INSTRUCTION(nextCard, nextInstruction, nextStepDirection):
         setColHighlightPos(
-            FlxMath.lerp(prevCard, currentCard, stateFraction),
-            FlxMath.lerp(prevInstruction, currentInstruction, stateFraction));
+            FlxMath.lerp(currentCard, nextCard, stateFraction),
+            FlxMath.lerp(currentInstruction, nextInstruction, stateFraction));
         if (stateDone) {
+          currentCard = nextCard;
+          currentInstruction = nextInstruction;
+          stepDirection = nextStepDirection;
           switchState(NEXT_INSTRUCTION_END);
         }
       case NEXT_INSTRUCTION_END:
@@ -189,14 +211,14 @@ class Runner extends FlxGroup {
 
 enum State {
   INSTRUCTION_START;
-  MOVE_NEEDLE_START;
-  MOVE_NEEDLE(fromX: Float, fromY: Float, toX: Float, toY: Float);
-  MOVE_NEEDLE_END;
   STITCH_START;
   STITCH(sprite: FlxSprite);
   STITCH_END;
+  MOVE_NEEDLE_START;
+  MOVE_NEEDLE(fromX: Float, fromY: Float, toX: Float, toY: Float);
+  MOVE_NEEDLE_END;
   NEXT_INSTRUCTION_START;
-  NEXT_INSTRUCTION(prevCard: Int, prevInstruction: Int);
+  NEXT_INSTRUCTION(nextCard: Int, nextInstruction: Int, nextStepDirection: Int);
   NEXT_INSTRUCTION_END;
   DONE;
 }
