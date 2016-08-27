@@ -87,15 +87,12 @@ class Runner extends FlxGroup {
       case INSTRUCTION_START:
         switchState(STITCH_START);
       case STITCH_START:
-        if (instruction.stitch) {
-          if (needle.col < 0 || needle.col >= embroidery.cols || needle.row < 0 || needle.row >= embroidery.rows) {
-            switchState(DONE, "Error: cannot stitch here");
-          } else if (embroidery.stitchAt(needle.col, needle.row) == null) {
-            var stitch = embroidery.addStitch(needle.col, needle.row, FlxColor.RED);
-            switchState(STITCH(stitch), 1.0, "Stitching...");
-          } else {
-            switchState(DONE, "Error: already stitched here");
-          }
+        if (instruction.stitch &&
+            needle.col >= 0 && needle.col < embroidery.cols &&
+            needle.row >= 0 && needle.row < embroidery.rows &&
+            embroidery.stitchAt(needle.col, needle.row) == null) {
+          var stitch = embroidery.addStitch(needle.col, needle.row, FlxColor.RED);
+          switchState(STITCH(stitch), 1.0, "Stitching...");
         } else {
           switchState(STITCH_END);
         }
@@ -160,14 +157,14 @@ class Runner extends FlxGroup {
         if (instruction.jump && instruction.up) {
           var nextCard = currentCard - 1;
           if (nextCard < 0) {
-            switchState(DONE, "Error: cannot jump up from here");
+            switchState(DONE, "Done");
           } else {
             switchState(NEXT_INSTRUCTION(nextCard, currentInstruction, nextStepDirection), 0.5);
           }
         } else if (instruction.jump && instruction.down) {
           var nextCard = currentCard + 1;
           if (nextCard >= program.numCards) {
-            switchState(DONE, "Error: cannot jump down from here");
+            switchState(DONE, "Done");
           } else {
             switchState(NEXT_INSTRUCTION(nextCard, currentInstruction, nextStepDirection), 0.5);
           }
