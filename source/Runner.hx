@@ -90,7 +90,9 @@ class Runner extends FlxBasic {
         }
       case MAYBE_STITCH:
         if (instruction.stitch) {
-          if (embroidery.stitchAt(needle.col, needle.row) == null) {
+          if (needle.col < 0 || needle.col >= embroidery.cols || needle.row < 0 || needle.row >= embroidery.rows) {
+            switchState(DONE, "Error: cannot stitch here");
+          } else if (embroidery.stitchAt(needle.col, needle.row) == null) {
             var stitch = embroidery.addStitch(needle.col, needle.row, FlxColor.RED);
             switchState(STITCHING(stitch), 1.0, "Stitching...");
           } else {
