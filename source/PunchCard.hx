@@ -15,14 +15,14 @@ class PunchCard extends FlxSpriteGroup {
   private var number: Int;
   private var help: HelpText;
 
-  private var paddingX: Float = 94;
-  private var paddingY: Float = 0;
+  public var paddingX(default, null): Float = 94;
+  public var paddingY(default, null): Float = 0;
   private var rows: Int = 11;
   private var cols: Int = 92;
 
   private var holeSprite: FlxSprite;
-  private var holeWidth: Int;
-  private var holeHeight: Int;
+  public var holeWidth(default, null): Int;
+  public var holeHeight(default, null): Int;
 
   private var colHighlight: FlxSprite;
   private var rowHighlight: FlxSprite;
@@ -42,7 +42,7 @@ class PunchCard extends FlxSpriteGroup {
     holeWidth = Math.ceil(holeSprite.width);
     holeHeight = Math.ceil(holeSprite.height);
 
-    colHighlight = new ColorSprite(holeWidth, rows * holeHeight, highlightColor);
+    colHighlight = makeColHighlight();
     colHighlight.y = paddingY;
     add(colHighlight);
     rowHighlight = new ColorSprite(30 + cols * holeWidth, holeHeight, highlightColor);
@@ -50,6 +50,10 @@ class PunchCard extends FlxSpriteGroup {
     add(rowHighlight);
 
     holes = [for (i in 0...(rows*cols)) null];
+  }
+
+  public function makeColHighlight(): FlxSprite {
+    return new ColorSprite(holeWidth, rows * holeHeight, highlightColor);
   }
 
   override public function update(elapsed: Float) {

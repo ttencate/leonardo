@@ -1,11 +1,11 @@
 package;
 
-import flixel.FlxBasic;
 import flixel.FlxSprite;
+import flixel.group.FlxGroup;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
 
-class Runner extends FlxBasic {
+class Runner extends FlxGroup {
 
   public var speed: Float = 1;
   public var done(get, never): Bool;
@@ -21,6 +21,7 @@ class Runner extends FlxBasic {
   private var timeSpentInState: Float = 0;
   private var currentCard: Int = 0;
   private var currentInstruction: Int = 0;
+  private var colHighlight: FlxSprite;
   private var text: String = "";
 
   public function new(program: Program, embroidery: Embroidery, needle: Needle, punchCards: Array<PunchCard>, help: HelpText) {
@@ -31,15 +32,28 @@ class Runner extends FlxBasic {
     this.punchCards = punchCards;
     this.help = help;
 
+    colHighlight = punchCards[0].makeColHighlight();
+    add(colHighlight);
+
     reset();
   }
 
   public function reset() {
+    setColHighlightPos(0, 0);
+
     needle.col = 0;
     needle.row = 0;
     needle.setEmbroideryPos(needle.col, needle.row);
 
     embroidery.removeAllStitches();
+  }
+
+  private function setColHighlightPos(card: Float, instruction: Float) {
+    var top = punchCards[Math.floor(card)];
+    var bottom = punchCards[Math.ceil(card)];
+    var f = card - Math.floor(card);
+    colHighlight.x = FlxMath.lerp(top.x + top.paddingX + instruction * top.holeWidth, bottom.x + bottom.paddingX + instruction * bottom.holeWidth, f);
+    colHighlight.y = FlxMath.lerp(top.y + top.paddingY, bottom.y + bottom.paddingY, f);
   }
 
   private function get_done(): Bool {
@@ -70,38 +84,40 @@ class Runner extends FlxBasic {
     var instruction = program.cards[currentCard][currentInstruction];
     switch (state) {
       case INSTRUCTION_START:
-        switchState(MAYBE_MOVE_NEEDLE);
-      case MAYBE_MOVE_NEEDLE:
+        switchState(MOVE_NEEDLE_START);
+      case MOVE_NEEDLE_START:
         if (instruction.up || instruction.down || instruction.left || instruction.right) {
           var fromX = needle.col;
           var fromY = needle.row;
           needle.col += instruction.colDelta;
           needle.row += instruction.rowDelta;
-          switchState(MOVING_NEEDLE(fromX, fromY, needle.col, needle.row), 1.0, "Moving...");
+          switchState(MOVE_NEEDLE(fromX, fromY, needle.col, needle.row), 1.0, "Moving...");
         } else {
-          switchState(MAYBE_STITCH);
+          switchState(MOVE_NEEDLE_END);
         }
-      case MOVING_NEEDLE(fromX, fromY, toX, toY):
+      case MOVE_NEEDLE(fromX, fromY, toX, toY):
         needle.setEmbroideryPos(
             FlxMath.lerp(fromX, toX, stateFraction),
             FlxMath.lerp(fromY, toY, stateFraction));
         if (stateDone) {
-          switchState(MAYBE_STITCH);
+          switchState(MOVE_NEEDLE_END);
         }
-      case MAYBE_STITCH:
+      case MOVE_NEEDLE_END:
+        switchState(STITCH_START);
+      case STITCH_START:
         if (instruction.stitch) {
           if (needle.col < 0 || needle.col >= embroidery.cols || needle.row < 0 || needle.row >= embroidery.rows) {
             switchState(DONE, "Error: cannot stitch here");
           } else if (embroidery.stitchAt(needle.col, needle.row) == null) {
             var stitch = embroidery.addStitch(needle.col, needle.row, FlxColor.RED);
-            switchState(STITCHING(stitch), 1.0, "Stitching...");
+            switchState(STITCH(stitch), 1.0, "Stitching...");
           } else {
             switchState(DONE, "Error: already stitched here");
           }
         } else {
-          switchState(NEXT_INSTRUCTION);
+          switchState(STITCH_END);
         }
-      case STITCHING(sprite):
+      case STITCH(sprite):
         var S = 0.4;
         if (stateFraction < 0.125) {
           var f = stateFraction * 8;
@@ -131,15 +147,28 @@ class Runner extends FlxBasic {
         }
         sprite.alpha = stateFraction;
         if (stateDone) {
-          switchState(NEXT_INSTRUCTION);
+          switchState(STITCH_END);
         }
-      case NEXT_INSTRUCTION:
+      case STITCH_END:
+        switchState(NEXT_INSTRUCTION_START);
+      case NEXT_INSTRUCTION_START:
+        var prevCard = currentCard;
+        var prevInstruction = currentInstruction;
         currentInstruction++;
         if (currentInstruction >= program.cardSize) {
           switchState(DONE, "Done");
         } else {
-          switchState(INSTRUCTION_START);
+          switchState(NEXT_INSTRUCTION(prevCard, prevInstruction), 0.5);
         }
+      case NEXT_INSTRUCTION(prevCard, prevInstruction):
+        setColHighlightPos(
+            FlxMath.lerp(prevCard, currentCard, stateFraction),
+            FlxMath.lerp(prevInstruction, currentInstruction, stateFraction));
+        if (stateDone) {
+          switchState(NEXT_INSTRUCTION_END);
+        }
+      case NEXT_INSTRUCTION_END:
+        switchState(INSTRUCTION_START);
       case DONE:
     }
 
@@ -160,10 +189,14 @@ class Runner extends FlxBasic {
 
 enum State {
   INSTRUCTION_START;
-  MAYBE_MOVE_NEEDLE;
-  MOVING_NEEDLE(fromX: Float, fromY: Float, toX: Float, toY: Float);
-  MAYBE_STITCH;
-  STITCHING(sprite: FlxSprite);
-  NEXT_INSTRUCTION;
+  MOVE_NEEDLE_START;
+  MOVE_NEEDLE(fromX: Float, fromY: Float, toX: Float, toY: Float);
+  MOVE_NEEDLE_END;
+  STITCH_START;
+  STITCH(sprite: FlxSprite);
+  STITCH_END;
+  NEXT_INSTRUCTION_START;
+  NEXT_INSTRUCTION(prevCard: Int, prevInstruction: Int);
+  NEXT_INSTRUCTION_END;
   DONE;
 }
