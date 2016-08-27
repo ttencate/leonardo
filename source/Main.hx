@@ -24,6 +24,7 @@ class Main extends Sprite {
   }
 }
 
+#if neko
 class DebugKeys extends FlxBasic {
   override public function update(elapsed: Float) {
     if (FlxG.keys.justPressed.ESCAPE) {
@@ -32,3 +33,4 @@ class DebugKeys extends FlxBasic {
     super.update(elapsed);
   }
 }
+#end

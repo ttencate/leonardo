@@ -157,19 +157,11 @@ class Runner extends FlxGroup {
           nextStepDirection = instruction.colDelta;
         }
         if (instruction.jump && instruction.up) {
-          var nextCard = currentCard - 1;
-          if (nextCard < 0) {
-            switchState(DONE, "Done");
-          } else {
-            switchState(NEXT_INSTRUCTION(nextCard, currentInstruction, nextStepDirection), 0.5);
-          }
+          var nextCard = (currentCard + program.numCards - 1) % program.numCards;
+          switchState(NEXT_INSTRUCTION(nextCard, currentInstruction, nextStepDirection), 0.5);
         } else if (instruction.jump && instruction.down) {
-          var nextCard = currentCard + 1;
-          if (nextCard >= program.numCards) {
-            switchState(DONE, "Done");
-          } else {
-            switchState(NEXT_INSTRUCTION(nextCard, currentInstruction, nextStepDirection), 0.5);
-          }
+          var nextCard = (currentCard + 1) % program.numCards;
+          switchState(NEXT_INSTRUCTION(nextCard, currentInstruction, nextStepDirection), 0.5);
         } else {
           var nextInstruction = currentInstruction + nextStepDirection;
           if (nextInstruction < 0 || nextInstruction >= program.cardSize) {
