@@ -11,6 +11,7 @@ class PunchCard extends FlxSpriteGroup {
 
   private var program: Program;
   private var number: Int;
+  private var help: HelpText;
 
   private var paddingX: Float = 94;
   private var paddingY: Float = 0;
@@ -26,10 +27,11 @@ class PunchCard extends FlxSpriteGroup {
 
   private var holes: Array<FlxSprite>;
 
-  public function new(program: Program, number: Int) {
+  public function new(program: Program, number: Int, help: HelpText) {
     super();
     this.program = program;
     this.number = number;
+    this.help = help;
 
     var background = new FlxSprite(AssetPaths.punch_card__png);
     add(background);
@@ -61,6 +63,7 @@ class PunchCard extends FlxSpriteGroup {
       if (FlxG.mouse.justPressed) {
         toggleHole(col, row);
       }
+      help.set(program.cards[number][col].toString());
     } else {
       colHighlight.visible = false;
       rowHighlight.visible = false;

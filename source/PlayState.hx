@@ -3,9 +3,9 @@ package;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
-import flixel.text.FlxText;
-import flixel.ui.FlxButton;
 import flixel.math.FlxMath;
+import flixel.ui.FlxButton;
+import flixel.util.FlxColor;
 
 class PlayState extends FlxState {
 
@@ -13,6 +13,7 @@ class PlayState extends FlxState {
 
   private var embroidery: Embroidery;
   private var needle: Needle;
+  private var help: HelpText;
 
   public function new(program: Program) {
     super();
@@ -32,9 +33,14 @@ class PlayState extends FlxState {
     needle = new Needle(embroidery);
     add(needle);
 
+    help = new HelpText(6, 352, FlxG.width - 12);
+    help.setFormat(AssetPaths.day_roman__ttf, 20, FlxColor.WHITE);
+    help.setBorderStyle(SHADOW, 0x80000000, 2);
+    add(help);
+
     var y: Float = 384 + 14;
     for (i in 0...program.numCards) {
-      var punchCard = new PunchCard(program, i);
+      var punchCard = new PunchCard(program, i, help);
       punchCard.y = y;
       y += punchCard.height;
       add(punchCard);
