@@ -67,7 +67,7 @@ class PlayState extends FlxState {
 
   private function onRunClick() {
     if (runner == null) {
-      runner = new Runner(program, embroidery, needle, punchCards);
+      runner = new Runner(program, embroidery, needle, punchCards, help);
       add(runner);
       enableInput(false);
     }

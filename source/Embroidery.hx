@@ -12,12 +12,14 @@ class Embroidery extends FlxSpriteGroup {
   private var weaveWidth: Float;
   private var weaveHeight: Float;
 
-  private var stitches: Array<FlxSprite> = [];
+  private var stitches: Array<Array<FlxSprite>>;
 
   public function new(cols: Int, rows: Int) {
     super();
     this.cols = cols;
     this.rows = rows;
+
+    this.stitches = [for (row in 0...rows) [for (col in 0...cols) null]];
 
     var y: Float = 0;
     for (row in 0...rows) {
@@ -42,18 +44,27 @@ class Embroidery extends FlxSpriteGroup {
     return y + weaveHeight * (row + 0.5);
   }
 
+  public function stitchAt(col: Int, row: Int): Null<FlxColor> {
+    var stitch = stitches[row][col];
+    return stitch == null ? null : stitch.color;
+  }
+
   public function addStitch(col: Int, row: Int, color: FlxColor): FlxSprite {
     var stitch = new FlxSprite(weaveWidth * col, weaveHeight * row, AssetPaths.stitch__png);
     stitch.color = color;
     add(stitch);
-    stitches.push(stitch);
+    stitches[row][col] = stitch;
     return stitch;
   }
 
   public function removeAllStitches() {
-    for (stitch in stitches) {
-      remove(stitch);
+    for (row in stitches) {
+      for (stitch in row) {
+        if (stitch != null) {
+          remove(stitch);
+        }
+      }
     }
-    stitches = [];
+    stitches = [for (row in 0...rows) [for (col in 0...cols) null]];
   }
 }

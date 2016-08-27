@@ -14,19 +14,22 @@ class Runner extends FlxBasic {
   private var embroidery: Embroidery;
   private var needle: Needle;
   private var punchCards: Array<PunchCard>;
+  private var help: HelpText;
 
   private var state: State = INSTRUCTION_START;
   private var totalTimeInState: Float = 0;
   private var timeSpentInState: Float = 0;
   private var currentCard: Int = 0;
   private var currentInstruction: Int = 0;
+  private var text: String = "";
 
-  public function new(program: Program, embroidery: Embroidery, needle: Needle, punchCards: Array<PunchCard>) {
+  public function new(program: Program, embroidery: Embroidery, needle: Needle, punchCards: Array<PunchCard>, help: HelpText) {
     super();
     this.program = program;
     this.embroidery = embroidery;
     this.needle = needle;
     this.punchCards = punchCards;
+    this.help = help;
 
     reset();
   }
@@ -48,6 +51,7 @@ class Runner extends FlxBasic {
     while (!done && elapsed > 0) {
       elapsed = tick(elapsed);
     }
+    help.set(text);
   }
 
   private function tick(remainingInFrame: Float): Float {
@@ -73,7 +77,7 @@ class Runner extends FlxBasic {
           var fromY = needle.row;
           needle.col += instruction.colDelta;
           needle.row += instruction.rowDelta;
-          switchState(MOVING_NEEDLE(fromX, fromY, needle.col, needle.row), 1.0);
+          switchState(MOVING_NEEDLE(fromX, fromY, needle.col, needle.row), 1.0, "Moving...");
         } else {
           switchState(MAYBE_STITCH);
         }
@@ -86,8 +90,12 @@ class Runner extends FlxBasic {
         }
       case MAYBE_STITCH:
         if (instruction.stitch) {
-          var stitch = embroidery.addStitch(needle.col, needle.row, FlxColor.RED);
-          switchState(STITCHING(stitch), 1.0);
+          if (embroidery.stitchAt(needle.col, needle.row) == null) {
+            var stitch = embroidery.addStitch(needle.col, needle.row, FlxColor.RED);
+            switchState(STITCHING(stitch), 1.0, "Stitching...");
+          } else {
+            switchState(DONE, "Error: already stitched here");
+          }
         } else {
           switchState(NEXT_INSTRUCTION);
         }
@@ -126,7 +134,7 @@ class Runner extends FlxBasic {
       case NEXT_INSTRUCTION:
         currentInstruction++;
         if (currentInstruction >= program.cardSize) {
-          switchState(DONE);
+          switchState(DONE, "Done");
         } else {
           switchState(INSTRUCTION_START);
         }
@@ -136,10 +144,11 @@ class Runner extends FlxBasic {
     return remainingInFrame;
   }
 
-  private function switchState(nextState: State, duration: Float = 0.0) {
+  private function switchState(nextState: State, duration: Float = 0.0, text: String = "") {
     this.state = nextState;
     this.totalTimeInState = duration;
     this.timeSpentInState = 0;
+    this.text = text;
   }
 
   private function stateFraction(): Float {
