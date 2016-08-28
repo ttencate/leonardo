@@ -32,6 +32,8 @@ class Url {
   public static function setLocation(location: String) {
 #if html5
     js.Browser.window.location.href = location;
+#else
+    trace("Would set location to:", location);
 #end
   }
 }

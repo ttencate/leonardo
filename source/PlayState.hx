@@ -37,6 +37,8 @@ class PlayState extends FlxState {
   private var runnerGroup: FlxGroup;
   private var brushGroup: FlxGroup;
 
+  private var backButton: FlxUISpriteButton;
+  private var linkButton: FlxUISpriteButton;
   private var runStopButton: FlxUISpriteButton;
   private var speedButtons: Array<FlxUISpriteButton>;
 
@@ -72,14 +74,14 @@ class PlayState extends FlxState {
 
     backgroundGroup.add(new FlxSprite(AssetPaths.background__png));
 
-    var backButton = new FlxUISpriteButton(16, 16, new FlxSprite(AssetPaths.back__png), function() {
+    backButton = new FlxUISpriteButton(16, 16, new FlxSprite(AssetPaths.back__png), function() {
       Main.fadeState(new MenuState());
     });
     backButton.loadGraphicsUpOverDown(AssetPaths.square_button__png);
     backButton.labelOffsets[2].set(1, 1);
     controlsGroup.add(backButton);
 
-    var linkButton = new FlxUISpriteButton(96, 16, new FlxSprite(AssetPaths.link__png), onLinkClick);
+    linkButton = new FlxUISpriteButton(96, 16, new FlxSprite(AssetPaths.link__png), onLinkClick);
     linkButton.loadGraphicsUpOverDown(AssetPaths.square_button__png);
     linkButton.labelOffsets[2].set(1, 1);
     controlsGroup.add(linkButton);
@@ -176,39 +178,67 @@ class PlayState extends FlxState {
   override public function update(elapsed: Float) {
     super.update(elapsed);
 
+    if (runStopButton.mouseIsOver) {
+      if (runner != null) {
+        help.set("Abort the run and reset the machine");
+      } else {
+        help.set("Run the program");
+      }
+    } else if (backButton.mouseIsOver) {
+      help.set("Back to main menu");
+    } else if (linkButton.mouseIsOver) {
+      help.set("Set the browser address bar to a link containing this solution, for copying and sharing");
+    } else {
+      for (i in 0...speedButtons.length) {
+        var button = speedButtons[i];
+        if (button.mouseIsOver) {
+          help.set([
+            "Pause program execution",
+            "Run program at 1x speed",
+            "Run program at 5x speed",
+            "Run program at 25x speed",
+          ][i]);
+        }
+      }
+    }
+
     var debugSolve = false;
 #if neko
     debugSolve = FlxG.keys.pressed.S;
 #end
     if (!complete && ((runner != null && runner.isSolved()) || debugSolve)) {
-      complete = true;
-
-      Reflect.setField(FlxG.save.data, "solved_" + puzzle.name, true);
-      FlxG.save.flush();
-
-      runnerGroup.remove(runner);
-      runner = null;
-
-      controlsGroup.forEachExists(function(control) {
-        control.active = false;
-      });
-
-      var overlay = new ColorSprite(FlxG.width, FlxG.height, 0xff483e37);
-      overlay.alpha = 0;
-      overlayGroup.add(overlay);
-      FlxTween.tween(overlay, {alpha: 1}, 1.0, {ease: FlxEase.sineInOut});
-
-      embroidery.antialiasing = true;
-      embroidery.pixelPerfectPosition = false;
-      embroidery.pixelPerfectRender = false;
-      var s = 2;
-      FlxTween.tween(embroidery.scale, {x: s, y: s}, 1.0, {ease: FlxEase.quadInOut});
-      FlxTween.tween(embroidery, {x: Math.floor((FlxG.width - embroidery.width) / 2), y: Math.floor((FlxG.height - embroidery.height) / 2)}, 1.0, {ease: FlxEase.quadInOut});
-      FlxTween.tween(needle, {y: -needle.height}, 1.0, {ease: FlxEase.quadIn});
+      win();
     }
     if (complete && FlxG.mouse.justPressed) {
       Main.fadeState(new MenuState());
     }
+  }
+
+  public function win() {
+    complete = true;
+
+    Reflect.setField(FlxG.save.data, "solved_" + puzzle.name, true);
+    FlxG.save.flush();
+
+    runnerGroup.remove(runner);
+    runner = null;
+
+    controlsGroup.forEachExists(function(control) {
+      control.active = false;
+    });
+
+    var overlay = new ColorSprite(FlxG.width, FlxG.height, 0xff483e37);
+    overlay.alpha = 0;
+    overlayGroup.add(overlay);
+    FlxTween.tween(overlay, {alpha: 1}, 1.0, {ease: FlxEase.sineInOut});
+
+    embroidery.antialiasing = true;
+    embroidery.pixelPerfectPosition = false;
+    embroidery.pixelPerfectRender = false;
+    var s = 2;
+    FlxTween.tween(embroidery.scale, {x: s, y: s}, 1.0, {ease: FlxEase.quadInOut});
+    FlxTween.tween(embroidery, {x: Math.floor((FlxG.width - embroidery.width) / 2), y: Math.floor((FlxG.height - embroidery.height) / 2)}, 1.0, {ease: FlxEase.quadInOut});
+    FlxTween.tween(needle, {y: -needle.height}, 1.0, {ease: FlxEase.quadIn});
   }
 
   public function reset() {
@@ -262,7 +292,6 @@ class PlayState extends FlxState {
 
   private function onLinkClick() {
     var url = Url.base() + "#" + puzzle.name + "," + StringTools.urlEncode(program.toJson());
-    trace(url);
     Url.setLocation(url);
   }
 
