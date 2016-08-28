@@ -190,9 +190,12 @@ class Runner extends FlxGroup {
       case MOVE_NEEDLE_START:
         if (instruction.move) {
           var nextCol = needle.col + instruction.colDelta;
+          if (nextCol < 0) nextCol = 0;
+          if (nextCol >= embroidery.cols) nextCol = embroidery.cols - 1;
           var nextRow = needle.row + instruction.rowDelta;
-          if (nextCol >= 0 && nextCol < embroidery.cols &&
-              nextRow >= 0 && nextRow < embroidery.rows) {
+          if (nextRow < 0) nextRow = 0;
+          if (nextRow >= embroidery.rows) nextRow = embroidery.rows - 1;
+          if (nextCol != needle.col || nextRow != needle.row) {
             switchState(MOVE_NEEDLE(nextCol, nextRow), 1.0, "Moving...");
           } else {
             switchState(MOVE_NEEDLE_END);
