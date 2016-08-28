@@ -1,6 +1,7 @@
 package;
 
 import flixel.FlxG;
+import flixel.FlxSprite;
 import flixel.graphics.FlxGraphic;
 import flixel.util.FlxColor;
 import openfl.display.BitmapData;
@@ -48,5 +49,25 @@ class Puzzle {
       }
     }
     return colors;
+  }
+
+  public function createPatternSprite(): FlxSprite {
+    var pattern = new FlxSprite();
+    var S = 24;
+    pattern.makeGraphic(S * cols + 1, S * rows + 1, FlxColor.TRANSPARENT, true);
+    var squareOutline = new FlxSprite(AssetPaths.pattern_square_outline__png);
+    for (row in 0...rows) {
+      for (col in 0...cols) {
+        pattern.stamp(squareOutline, S * col, S * row);
+      }
+    }
+    var square = new FlxSprite(AssetPaths.pattern_square__png);
+    for (row in 0...rows) {
+      for (col in 0...cols) {
+        square.color = colorAt(col, row);
+        pattern.stamp(square, S * col, S * row);
+      }
+    }
+    return pattern;
   }
 }

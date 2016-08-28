@@ -17,7 +17,7 @@ class Puzzles {
         new Puzzle(2, 16, AssetPaths.puzzle04__png),
         new Puzzle(2, 16, AssetPaths.puzzle04__png),
         new Puzzle(2, 16, AssetPaths.puzzle04__png),
-        new Puzzle(2, 16, AssetPaths.puzzle04__png),
+        new Puzzle(2, 16, AssetPaths.puzzle10__png),
 
         new Puzzle(2, 16, AssetPaths.puzzle04__png),
         new Puzzle(2, 16, AssetPaths.puzzle04__png),

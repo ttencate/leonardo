@@ -71,21 +71,9 @@ class PlayState extends FlxState {
     add(embroidery);
 
     if (puzzle.patternAsset != null) {
-      var pattern = new FlxSpriteGroup(832, 176);
-      var S = 24;
-      for (row in 0...puzzle.rows) {
-        for (col in 0...puzzle.cols) {
-          pattern.add(new FlxSprite(S * col, S * row, AssetPaths.pattern_square_outline__png));
-        }
-      }
-      for (row in 0...puzzle.rows) {
-        for (col in 0...puzzle.cols) {
-          var square = new FlxSprite(S * col, S * row, AssetPaths.pattern_square__png);
-          square.color = puzzle.colorAt(col, row);
-          pattern.add(square);
-        }
-      }
-      pattern.offset.set((pattern.width - 1) / 2, (pattern.height - 1) / 2);
+      var pattern = puzzle.createPatternSprite();
+      pattern.x = 832 - Math.floor(pattern.width / 2);
+      pattern.y = 176 - Math.floor(pattern.height / 2);
       add(pattern);
     }
 
