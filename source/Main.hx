@@ -14,14 +14,7 @@ class Main extends Sprite {
   public function new() {
     super();
     addChild(new FlxGame(0, 0, null, 1, 60, 60, true));
-    var puzzle = Puzzles.find(FlxG.save.data.currentPuzzle);
-    if (puzzle != null) {
-      FlxG.switchState(new PlayState(puzzle));
-    } else if (FlxG.save.data.currentPuzzle == "menu") {
-      FlxG.switchState(new MenuState());
-    } else {
-      FlxG.switchState(new PlayState(Puzzles.campaign[0]));
-    }
+    FlxG.switchState(createStartState());
 
     FlxG.mouse.useSystemCursor = true;
 #if neko
@@ -29,6 +22,31 @@ class Main extends Sprite {
     FlxG.plugins.add(new DebugKeys());
 #end
   }
+
+  private function createStartState(): FlxState {
+    var hash = Url.hash();
+    if (hash != "") {
+      var commaIndex = hash.indexOf(",");
+      if (commaIndex >= 0) {
+        var puzzleName = hash.substring(0, commaIndex);
+        var programJson = StringTools.urlDecode(hash.substring(commaIndex + 1));
+        var puzzle = Puzzles.find(puzzleName);
+        if (puzzle != null) {
+          return new PlayState(puzzle, programJson);
+        }
+      }
+    }
+
+    var puzzle = Puzzles.find(FlxG.save.data.currentPuzzle);
+    if (puzzle != null) {
+      return new PlayState(puzzle);
+    } else if (FlxG.save.data.currentPuzzle == "menu") {
+      return new MenuState();
+    } else {
+      return new PlayState(Puzzles.campaign[0]);
+    }
+  }
+
 
   public static function fadeState(nextState: FlxState) {
     var overlay = new ColorSprite(FlxG.width, FlxG.height, FlxColor.BLACK);

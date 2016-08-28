@@ -17,6 +17,7 @@ import flixel.util.FlxColor;
 class PlayState extends FlxState {
 
   private var puzzle: Puzzle;
+  private var programJson: Null<String>;
 
   private var program: Program;
 
@@ -43,16 +44,22 @@ class PlayState extends FlxState {
   private var speed: Float = 1;
   private var complete: Bool = false;
 
-  public function new(puzzle: Puzzle) {
+  public function new(puzzle: Puzzle, ?programJson: String) {
     super();
     this.puzzle = puzzle;
+    this.programJson = programJson;
   }
 
   override public function create() {
     super.create();
 
     this.program = new Program(puzzle);
-    this.program.fromJson(puzzle, Reflect.field(FlxG.save.data, "program_" + puzzle.name + "_0"));
+    if (this.programJson != null) {
+      this.program.fromJson(puzzle, programJson);
+      programJson = null;
+    } else {
+      this.program.fromJson(puzzle, Reflect.field(FlxG.save.data, "program_" + puzzle.name + "_0"));
+    }
 
     add(backgroundGroup = new FlxGroup());
     add(patternGroup = new FlxGroup());
@@ -71,6 +78,11 @@ class PlayState extends FlxState {
     backButton.loadGraphicsUpOverDown(AssetPaths.square_button__png);
     backButton.labelOffsets[2].set(1, 1);
     controlsGroup.add(backButton);
+
+    var linkButton = new FlxUISpriteButton(96, 16, new FlxSprite(AssetPaths.link__png), onLinkClick);
+    linkButton.loadGraphicsUpOverDown(AssetPaths.square_button__png);
+    linkButton.labelOffsets[2].set(1, 1);
+    controlsGroup.add(linkButton);
 
     if (puzzle.text != null) {
       var instructions = new FlxText(16, 96, 240, puzzle.text);
@@ -246,6 +258,12 @@ class PlayState extends FlxState {
     if (runner != null) {
       runner.speed = speed;
     }
+  }
+
+  private function onLinkClick() {
+    var url = Url.base() + "#" + puzzle.name + "," + StringTools.urlEncode(program.toJson());
+    trace(url);
+    Url.setLocation(url);
   }
 
   private function onWheelButtonClick(index: Int) {
