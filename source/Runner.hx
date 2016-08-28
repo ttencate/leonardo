@@ -157,19 +157,17 @@ class Runner extends FlxGroup {
         switchState(MOVE_NEEDLE_START);
       case MOVE_NEEDLE_START:
         if (instruction.move) {
-          var fromX = needle.col;
-          var fromY = needle.row;
-          needle.col += instruction.colDelta;
-          needle.row += instruction.rowDelta;
-          switchState(MOVE_NEEDLE(fromX, fromY, needle.col, needle.row), 1.0, "Moving...");
+          switchState(MOVE_NEEDLE(needle.col + instruction.colDelta, needle.row + instruction.rowDelta), 1.0, "Moving...");
         } else {
           switchState(MOVE_NEEDLE_END);
         }
-      case MOVE_NEEDLE(fromX, fromY, toX, toY):
+      case MOVE_NEEDLE(toCol, toRow):
         needle.setEmbroideryPos(
-            FlxMath.lerp(fromX, toX, stateFraction),
-            FlxMath.lerp(fromY, toY, stateFraction));
+            FlxMath.lerp(needle.col, toCol, stateFraction),
+            FlxMath.lerp(needle.row, toRow, stateFraction));
         if (stateDone) {
+          needle.col = toCol;
+          needle.row = toRow;
           switchState(MOVE_NEEDLE_END);
         }
       case MOVE_NEEDLE_END:
@@ -240,7 +238,7 @@ enum State {
   STITCH(sprite: FlxSprite);
   STITCH_END;
   MOVE_NEEDLE_START;
-  MOVE_NEEDLE(fromX: Float, fromY: Float, toX: Float, toY: Float);
+  MOVE_NEEDLE(toCol: Int, toRow: Int);
   MOVE_NEEDLE_END;
   NEXT_INSTRUCTION_START;
   NEXT_INSTRUCTION(nextCard: Int, nextInstruction: Int, nextStepDirection: Int);
