@@ -14,7 +14,14 @@ class Main extends Sprite {
   public function new() {
     super();
     addChild(new FlxGame(0, 0, null, 1, 60, 60, true));
-    FlxG.switchState(new MenuState());
+    var puzzle = Puzzles.find(FlxG.save.data.currentPuzzle);
+    if (puzzle != null) {
+      FlxG.switchState(new PlayState(puzzle));
+    } else if (FlxG.save.data.currentPuzzle == "menu") {
+      FlxG.switchState(new MenuState());
+    } else {
+      FlxG.switchState(new PlayState(Puzzles.campaign[0]));
+    }
 
     FlxG.mouse.useSystemCursor = true;
 #if neko

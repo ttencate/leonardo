@@ -41,5 +41,8 @@ class MenuState extends FlxState {
     }
 
     Main.fadeIn();
+
+    FlxG.save.data.currentPuzzle = "menu";
+    FlxG.save.flush();
   }
 }

@@ -8,6 +8,7 @@ import openfl.display.BitmapData;
 
 class Puzzle {
 
+  public var name(default, null): String;
   public var numCards(default, null): Int = 3;
   public var cardSize(default, null): Int = 84;
   public var numWheels(default, null): Int = 2;
@@ -19,7 +20,8 @@ class Puzzle {
   public var colors(default, null): Array<FlxColor>;
   public var text(default, null): Null<String>;
 
-  public function new(patternAsset: Null<String>) {
+  public function new(name: String, patternAsset: Null<String>) {
+    this.name = name;
     this.patternAsset = patternAsset;
     if (patternAsset != null) {
       var bitmap = FlxG.bitmap.add(patternAsset).bitmap;

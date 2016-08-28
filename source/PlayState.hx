@@ -123,6 +123,9 @@ class PlayState extends FlxState {
     reset();
 
     Main.fadeIn();
+
+    FlxG.save.data.currentPuzzle = puzzle.name;
+    FlxG.save.flush();
   }
 
   override public function update(elapsed: Float) {
