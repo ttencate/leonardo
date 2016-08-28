@@ -3,7 +3,7 @@
 	<!-- _________________________ Application Settings _________________________ -->
 
 	<meta package="com.frozenfractal.leonardo" />
-	<app title="Leonardo's Painting Machine" file="leonardo" main="Main" version="0.0.1" company="Frozen Fractal" />
+	<app title="Leonardo's Painting Machine" file="leonardo" main="Main" version="1.0.0" company="Frozen Fractal" />
 
 	<!--The flixel preloader is not accurate in Chrome. You can use it regularly if you embed the swf into a html file
 		or you can set the actual size of your file manually at "FlxPreloaderBase-onUpdate-bytesTotal"-->
@@ -19,6 +19,7 @@
 
 	<!--HTML5-specific-->
 	<window if="html5" resizable="false" />
+	<template path="index.html" rename="index.html" />
 
 	<!--Desktop-specific-->
 	<window if="desktop" orientation="landscape" fullscreen="false" resizable="true" />

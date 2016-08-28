@@ -45,8 +45,8 @@ class Puzzles {
         new Puzzle("12x5_red_yellow_blue", AssetPaths.puzzle_12x5_red_yellow_blue__png)
           .setCards(3, 10)
           .setNumWheels(1)
-          .setFeatures([JUMP, DECREMENT, TEST_NONZERO])
-          .setText("Wheels can be used to keep track of a counter. Set an initial value by clicking it. Punch holes for decrementing and testing whether the counter is 0."),
+          .setFeatures([JUMP, INCREMENT, DECREMENT, TEST_ZERO, TEST_NONZERO])
+          .setText("Wheels can be used to keep track of a counter. Set an initial value by clicking it. Punch holes for incrementing, decrementing and testing whether the counter is 0."),
 
         new Puzzle("12x12_diagonal", AssetPaths.puzzle_12x12_diagonal__png)
           .setCards(3, 25)
