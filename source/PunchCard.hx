@@ -123,7 +123,9 @@ class PunchCard extends FlxSpriteGroup {
       colorHighlight.visible = true;
       colorHighlight.alpha = FlxG.mouse.pressed ? 0.5 : 1.0;
       if (FlxG.mouse.justPressed) {
-        cycleColor();
+        cycleColor(1);
+      } else if (FlxG.mouse.justPressedRight) {
+        cycleColor(-1);
       }
     } else {
       colorHighlight.visible = false;
@@ -144,8 +146,8 @@ class PunchCard extends FlxSpriteGroup {
     }
   }
 
-  private function cycleColor() {
-    program.colorIndices[number] = (program.colorIndices[number] + 1) % puzzle.colors.length;
+  private function cycleColor(direction: Int = 1) {
+    program.colorIndices[number] = (program.colorIndices[number] + puzzle.colors.length + direction) % puzzle.colors.length;
     swatch.color = program.getThreadColor(number);
   }
 }
