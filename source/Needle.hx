@@ -2,6 +2,7 @@ package;
 
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
+import flixel.util.FlxColor;
 
 class Needle extends FlxSpriteGroup {
 
@@ -10,19 +11,27 @@ class Needle extends FlxSpriteGroup {
 
   private var embroidery: Embroidery;
   private var sprite: FlxSprite;
+  private var colorSprite: FlxSprite;
 
   public function new(embroidery: Embroidery) {
     super();
     this.embroidery = embroidery;
 
     sprite = new FlxSprite(AssetPaths.needle__png);
-    sprite.offset.set(128, 384);
     add(sprite);
+
+    colorSprite = new FlxSprite(AssetPaths.needle_color__png);
+    add(colorSprite);
 
     setEmbroideryPos(0, 0);
   }
 
+  public function setColor(color: FlxColor) {
+    colorSprite.color = color;
+  }
+
   public function setEmbroideryPos(x: Float, y: Float) {
-    sprite.setPosition(embroidery.stitchX(x), embroidery.stitchY(y));
+    sprite.setPosition(embroidery.stitchX(x) - 128, embroidery.stitchY(y) - 384);
+    colorSprite.setPosition(sprite.x, sprite.y);
   }
 }

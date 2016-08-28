@@ -75,10 +75,10 @@ class Instruction {
       case 4: return "Only execute the rest of this instruction if the wheel is not 0";
       case 5: return "Paint at the current location in the colour selected for this punch card";
       case 6: return "Jump up/down to another punch card and/or switch read direction to left/right";
-      case 7: return "Move the brush up, or jump to the previous punch card (wraps around)";
-      case 8: return "Move the brush down, or jump to the next punch card (wraps around)";
-      case 9: return "Move the brush left, or start reading instructions to the left";
-      case 10: return "Move the brush right, or start reading instructions to the right";
+      case 7: return "Move the brush up if possible, or jump to the previous punch card (wraps around)";
+      case 8: return "Move the brush down if possible, or jump to the next punch card (wraps around)";
+      case 9: return "Move the brush left if possible, or start reading instructions to the left";
+      case 10: return "Move the brush right if possible, or start reading instructions to the right";
       default: return "";
     }
   }

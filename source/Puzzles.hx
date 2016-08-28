@@ -11,7 +11,7 @@ class Puzzles {
           .setCards(1, 12)
           .setNumWheels(0)
           .setFeatures([])
-          .setText("Welcome to Leonardo's Painting Machine!\nYou program the machine using punch cards to reproduce the sketch shown on the right. Instructions tell the brush when to paint and where to move."),
+          .setText("Welcome to Leonardo's Painting Machine!\nYou program the machine using punch cards to reproduce the sketch shown on the right. The card is read left to right. Holes in the punch card tell the brush where to move and when to paint."),
 
         new Puzzle(AssetPaths.puzzle04__png),
         new Puzzle(AssetPaths.puzzle04__png),

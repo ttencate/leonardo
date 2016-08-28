@@ -3,6 +3,7 @@ package;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.group.FlxGroup;
 import flixel.group.FlxSpriteGroup;
 import flixel.addons.ui.FlxUISpriteButton;
 import flixel.math.FlxMath;
@@ -24,6 +25,7 @@ class PlayState extends FlxState {
   private var runStopButton: FlxUISpriteButton;
   private var speedButtons: Array<FlxUISpriteButton>;
 
+  private var runnerGroup: FlxGroup;
   private var runner: Runner;
   private var speed: Float = 1;
 
@@ -77,8 +79,7 @@ class PlayState extends FlxState {
     speedButtons[1].toggled = true;
 
     embroidery = new Embroidery(puzzle);
-    embroidery.x = 464 - embroidery.width / 2;
-    embroidery.y = 176 - embroidery.height / 2;
+    embroidery.setPosition(272, 0);
     add(embroidery);
 
     if (puzzle.patternAsset != null) {
@@ -87,9 +88,6 @@ class PlayState extends FlxState {
       pattern.y = 176 - Math.floor(pattern.height / 2);
       add(pattern);
     }
-
-    needle = new Needle(embroidery);
-    add(needle);
 
     help = new HelpText(6, 352, FlxG.width - 12);
     help.setFormat(AssetPaths.day_roman__ttf, 20, FlxColor.WHITE);
@@ -116,6 +114,14 @@ class PlayState extends FlxState {
       add(new FlxSprite(FlxG.width - 128, FlxG.height - 384, AssetPaths.wheels_overlay__png));
     }
 
+    runnerGroup = new FlxGroup();
+    add(runnerGroup);
+
+    needle = new Needle(embroidery);
+    add(needle);
+
+    reset();
+
     Main.fadeIn();
   }
 
@@ -123,17 +129,32 @@ class PlayState extends FlxState {
     super.update(elapsed);
   }
 
+  public function reset() {
+    needle.col = 0;
+    needle.row = 0;
+    needle.setColor(program.getThreadColor(0));
+    needle.setEmbroideryPos(needle.col, needle.row);
+
+    embroidery.removeAllStitches();
+
+    for (wheel in wheels) {
+      wheel.alpha = 1;
+      wheel.value = 0;
+      wheel.moveToValue(0);
+    }
+  }
+
   private function onRunStopClick() {
     if (runner == null) {
       runStopButton.label = new FlxSprite(AssetPaths.stop__png);
       runner = new Runner(puzzle, program, embroidery, needle, punchCards, wheels, help);
       runner.speed = speed;
-      add(runner);
+      runnerGroup.add(runner);
       enableInput(false);
     } else {
       runStopButton.label = new FlxSprite(AssetPaths.run__png);
-      runner.reset();
-      remove(runner);
+      reset();
+      runnerGroup.remove(runner);
       runner = null;
       enableInput(true);
     }

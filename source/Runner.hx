@@ -39,24 +39,7 @@ class Runner extends FlxGroup {
 
     colHighlight = punchCards[0].makeColHighlight();
     add(colHighlight);
-
-    reset();
-  }
-
-  public function reset() {
     setColHighlightPos(0, 0);
-
-    needle.col = 0;
-    needle.row = 0;
-    needle.setEmbroideryPos(needle.col, needle.row);
-
-    embroidery.removeAllStitches();
-
-    for (wheel in wheels) {
-      wheel.alpha = 1;
-      wheel.value = 0;
-      wheel.moveToValue(0);
-    }
   }
 
   private function setColHighlightPos(card: Float, instruction: Float) {
@@ -146,43 +129,22 @@ class Runner extends FlxGroup {
       case STITCH_START:
         if (instruction.stitch &&
             needle.col >= 0 && needle.col < embroidery.cols &&
-            needle.row >= 0 && needle.row < embroidery.rows &&
-            embroidery.stitchAt(needle.col, needle.row) == null) {
-          var stitch = embroidery.addStitch(needle.col, needle.row, program.getThreadColor(currentCard));
+            needle.row >= 0 && needle.row < embroidery.rows) {
+          var stitch = embroidery.makeStitch(needle.col, needle.row, program.getThreadColor(currentCard));
+          add(stitch);
           switchState(STITCH(stitch), 1.0, "Stitching...");
         } else {
           switchState(STITCH_END);
         }
       case STITCH(sprite):
-        var S = 0.4;
-        if (stateFraction < 0.125) {
-          var f = stateFraction * 8;
-          needle.setEmbroideryPos(
-              FlxMath.lerp(needle.col, needle.col - S, f),
-              FlxMath.lerp(needle.row, needle.row - S, f));
-        } else if (stateFraction < 0.375) {
-          var f = (stateFraction - 0.125) * 4;
-          needle.setEmbroideryPos(
-              FlxMath.lerp(needle.col - S, needle.col + S, f),
-              FlxMath.lerp(needle.row - S, needle.row + S, f));
-        } else if (stateFraction < 0.625) {
-          var f = (stateFraction - 0.375) * 4;
-          needle.setEmbroideryPos(
-              needle.col + S,
-              FlxMath.lerp(needle.row + S, needle.row - S, f));
-        } else if (stateFraction < 0.875) {
-          var f = (stateFraction - 0.625) * 4;
-          needle.setEmbroideryPos(
-              FlxMath.lerp(needle.col + S, needle.col - S, f), 
-              FlxMath.lerp(needle.row - S, needle.row + S, f));
-        } else {
-          var f = (stateFraction - 0.875) * 8;
-          needle.setEmbroideryPos(
-              FlxMath.lerp(needle.col - S, needle.col, f),
-              FlxMath.lerp(needle.row + S, needle.row, f));
-        }
+        var S = 0.5;
+        var dx = Math.sin(3 * stateFraction * 2 * Math.PI);
+        var dy = -Math.sin(stateFraction * 2 * Math.PI);
+        needle.setEmbroideryPos(needle.col + S * dx, needle.row + S * dy);
         sprite.alpha = stateFraction;
         if (stateDone) {
+          remove(sprite);
+          embroidery.stampStitch(needle.col, needle.row, program.getThreadColor(currentCard));
           switchState(STITCH_END);
         }
       case STITCH_END:
@@ -238,6 +200,8 @@ class Runner extends FlxGroup {
         setColHighlightPos(
             FlxMath.lerp(currentCard, nextCard, stateFraction),
             FlxMath.lerp(currentInstruction, nextInstruction, stateFraction));
+        needle.setColor(
+            FlxColor.interpolate(program.getThreadColor(currentCard), program.getThreadColor(nextCard), stateFraction));
         if (stateDone) {
           currentCard = nextCard;
           currentInstruction = nextInstruction;
