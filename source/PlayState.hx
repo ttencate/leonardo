@@ -10,6 +10,8 @@ import flixel.input.mouse.FlxMouseButton.FlxMouseButtonID;
 import flixel.addons.ui.FlxUISpriteButton;
 import flixel.math.FlxMath;
 import flixel.text.FlxText;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
 import flixel.util.FlxColor;
 
 class PlayState extends FlxState {
@@ -25,12 +27,19 @@ class PlayState extends FlxState {
   private var wheels: Array<Wheel>;
   private var wheelButtons: Array<WheelButton>;
 
+  private var backgroundGroup: FlxGroup;
+  private var patternGroup: FlxGroup;
+  private var controlsGroup: FlxGroup;
+  private var programGroup: FlxGroup;
+  private var runnerGroup: FlxGroup;
+  private var paintingGroup: FlxGroup;
+
   private var runStopButton: FlxUISpriteButton;
   private var speedButtons: Array<FlxUISpriteButton>;
 
-  private var runnerGroup: FlxGroup;
   private var runner: Runner;
   private var speed: Float = 1;
+  private var complete: Bool = false;
 
   public function new(puzzle: Puzzle) {
     super();
@@ -43,14 +52,21 @@ class PlayState extends FlxState {
     this.program = new Program(puzzle);
     this.program.fromJson(puzzle, Reflect.field(FlxG.save.data, "program_" + puzzle.name + "_0"));
 
-    add(new FlxSprite(AssetPaths.background__png));
+    add(backgroundGroup = new FlxGroup());
+    add(patternGroup = new FlxGroup());
+    add(controlsGroup = new FlxGroup());
+    add(programGroup = new FlxGroup());
+    add(runnerGroup = new FlxGroup());
+    add(paintingGroup = new FlxGroup());
+
+    backgroundGroup.add(new FlxSprite(AssetPaths.background__png));
 
     var backButton = new FlxUISpriteButton(16, 16, new FlxSprite(AssetPaths.back__png), function() {
       Main.fadeState(new MenuState());
     });
     backButton.loadGraphicsUpOverDown(AssetPaths.square_button__png);
     backButton.labelOffsets[2].set(1, 1);
-    add(backButton);
+    controlsGroup.add(backButton);
 
     if (puzzle.text != null) {
       var instructions = new FlxText(16, 96, 240, puzzle.text);
@@ -59,13 +75,13 @@ class PlayState extends FlxState {
       while (instructions.height > 160) {
         instructions.size -= 1;
       }
-      add(instructions);
+      controlsGroup.add(instructions);
     }
 
     runStopButton = new FlxUISpriteButton(16, 272, new FlxSprite(AssetPaths.run__png), onRunStopClick);
     runStopButton.loadGraphicsUpOverDown(AssetPaths.square_button__png);
     runStopButton.labelOffsets[2].set(1, 1);
-    add(runStopButton);
+    controlsGroup.add(runStopButton);
 
     speedButtons = [];
     for (i in 0...4) {
@@ -77,26 +93,22 @@ class PlayState extends FlxState {
       ][i]), function() { onSpeedButtonClick(i); });
       speedButton.loadGraphicsUpOverDown(AssetPaths.speed_button__png, true);
       speedButton.labelOffsets[2].set(1, 1);
-      add(speedButton);
+      controlsGroup.add(speedButton);
       speedButtons.push(speedButton);
     }
     speedButtons[1].toggled = true;
-
-    embroidery = new Embroidery(puzzle);
-    embroidery.setPosition(272, 0);
-    add(embroidery);
 
     if (puzzle.patternAsset != null) {
       var pattern = puzzle.createPatternSprite();
       pattern.x = 832 - Math.floor(pattern.width / 2);
       pattern.y = 176 - Math.floor(pattern.height / 2);
-      add(pattern);
+      patternGroup.add(pattern);
     }
 
     help = new HelpText(6, 352, FlxG.width - 12);
     help.setFormat(AssetPaths.day_roman__ttf, 20, FlxColor.WHITE);
     help.setBorderStyle(SHADOW, 0x80000000, 2);
-    add(help);
+    programGroup.add(help);
 
     var y: Float = 384 + 14;
     punchCards = [];
@@ -104,7 +116,7 @@ class PlayState extends FlxState {
       var punchCard = new PunchCard(puzzle, program, i, help);
       punchCard.y = y;
       y += punchCard.height;
-      add(punchCard);
+      programGroup.add(punchCard);
       punchCards.push(punchCard);
     }
 
@@ -112,24 +124,25 @@ class PlayState extends FlxState {
     wheelButtons = [];
     for (i in 0...puzzle.numWheels) {
       var wheel = new Wheel(FlxG.width + 80, FlxG.height - 256 + 128 * i);
-      add(wheel);
+      programGroup.add(wheel);
       wheels.push(wheel);
 
       var wheelButton = new WheelButton(FlxG.width - 64, FlxG.height - 256 - 32 + 128 * i, function() {
         onWheelButtonClick(i);
       }, help);
-      add(wheelButton);
+      programGroup.add(wheelButton);
       wheelButtons.push(wheelButton);
     }
     if (puzzle.numWheels > 0) {
-      add(new FlxSprite(FlxG.width - 128, FlxG.height - 384, AssetPaths.wheels_overlay__png));
+      programGroup.add(new FlxSprite(FlxG.width - 128, FlxG.height - 384, AssetPaths.wheels_overlay__png));
     }
 
-    runnerGroup = new FlxGroup();
-    add(runnerGroup);
+    embroidery = new Embroidery(puzzle);
+    embroidery.setPosition(272, 0);
+    paintingGroup.add(embroidery);
 
     needle = new Needle(embroidery);
-    add(needle);
+    paintingGroup.add(needle);
 
     reset();
 
@@ -146,6 +159,31 @@ class PlayState extends FlxState {
 
   override public function update(elapsed: Float) {
     super.update(elapsed);
+
+    if (!complete && runner != null && runner.isSolved()) {
+      complete = true;
+
+      runnerGroup.remove(runner);
+      runner = null;
+
+      controlsGroup.forEachExists(function(control) {
+        control.active = false;
+      });
+
+      var overlay = new ColorSprite(FlxG.width, FlxG.height, 0xff483e37);
+      overlay.alpha = 0;
+      runnerGroup.add(overlay);
+      FlxTween.tween(overlay, {alpha: 1}, 1.0, {ease: FlxEase.sineInOut});
+
+      embroidery.antialiasing = true;
+      var s = 2;
+      FlxTween.tween(embroidery.scale, {x: s, y: s}, 1.0, {ease: FlxEase.quadInOut});
+      FlxTween.tween(embroidery, {x: Math.floor((FlxG.width - embroidery.width) / 2), y: Math.floor((FlxG.height - embroidery.height) / 2)}, 1.0, {ease: FlxEase.quadInOut});
+      FlxTween.tween(needle, {y: -needle.height}, 1.0, {ease: FlxEase.quadIn});
+    }
+    if (complete && FlxG.mouse.justPressed) {
+      Main.fadeState(new MenuState());
+    }
   }
 
   public function reset() {
