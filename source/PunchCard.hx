@@ -27,6 +27,7 @@ class PunchCard extends FlxSpriteGroup {
   private var colHighlight: FlxSprite;
   private var rowHighlight: FlxSprite;
   private var colorHighlight: FlxSprite;
+  private static var dragType: Bool = true;
 
   private var holes: Array<FlxSprite>;
 
@@ -77,7 +78,7 @@ class PunchCard extends FlxSpriteGroup {
     swatch.setPosition(14, 40);
     add(swatch);
 
-    colorHighlight = new ColorSprite(40, 40, highlightColor);
+    colorHighlight = new ColorSprite(40, 40, 0x40ffffff);
     colorHighlight.setPosition(9, 35);
     add(colorHighlight);
   }
@@ -108,7 +109,12 @@ class PunchCard extends FlxSpriteGroup {
       colHighlight.x = this.x + paddingX + col * holeWidth;
       rowHighlight.y = this.y + paddingY + row * holeHeight;
       if (FlxG.mouse.justPressed) {
-        toggleHole(col, row);
+        dragType = !program.cards[number][col].holes[row];
+      }
+      if (FlxG.mouse.pressed) {
+        setHole(col, row, dragType);
+      } else if (FlxG.mouse.pressedRight) {
+        setHole(col, row, false);
       }
       help.set(program.cards[number][col].toString());
     } else if (col >= -3 && col < cols && row >= 0 && row < rows && isRowEnabled(row)) {
@@ -122,7 +128,7 @@ class PunchCard extends FlxSpriteGroup {
     if (x >= ch.x && x < ch.x + ch.width && y >= ch.y && y < ch.y + ch.height) {
       help.set("Click or right-click to change the colour used by this punch card");
       colorHighlight.visible = true;
-      colorHighlight.alpha = FlxG.mouse.pressed ? 0.5 : 1.0;
+      colorHighlight.alpha = FlxG.mouse.pressed ? 1.0 : 0.5;
       if (FlxG.mouse.justPressed) {
         cycleColor(1);
       } else if (FlxG.mouse.justPressedRight) {
@@ -130,6 +136,13 @@ class PunchCard extends FlxSpriteGroup {
       }
     } else {
       colorHighlight.visible = false;
+    }
+  }
+
+  private function setHole(col: Int, row: Int, hole: Bool) {
+    var index = row * cols + col;
+    if ((holes[index] != null) != hole) {
+      toggleHole(col, row);
     }
   }
 

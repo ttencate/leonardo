@@ -59,15 +59,32 @@ class Puzzles {
           .setCards(3, 25)
           .setText("Da Vinci was so secretive about this painting machine that nobody had ever heard about it before this game was made."),
 
-        new Puzzle("", AssetPaths.puzzle04__png),
+        new Puzzle("9x9_triangle", AssetPaths.puzzle_9x9_triangle__png)
+          .setCards(3, 20)
+          .setText("Leonardo's most famous painting, the Mona Lisa, was painted using this machine. The stack of punch cards filled twelve horse carts."),
 
         // THIRD ROW
 
-        new Puzzle("", AssetPaths.puzzle04__png),
-        new Puzzle("", AssetPaths.puzzle04__png),
-        new Puzzle("", AssetPaths.puzzle04__png),
-        new Puzzle("", AssetPaths.puzzle04__png),
-        new Puzzle("", AssetPaths.puzzle04__png),
+        new Puzzle("13x13_stars", AssetPaths.puzzle_13x13_stars__png)
+          .setCards(3, 30)
+          .setText("To paint The Last Supper using this machine, the entire building had to be cleared for years so nobody would see it."),
+
+        new Puzzle("9x9_squares", AssetPaths.puzzle_9x9_squares__png)
+          .setCards(3, 50)
+          .setText("Besides the painting machine, Leonardo also invented a surgery machine and the world's first particle accelerator."),
+
+        new Puzzle("9x9_diamond", AssetPaths.puzzle_9x9_diamond__png)
+          .setCards(3, 30)
+          .setText("All the paintings you have reproduced so far were designed by Leonardo da Vinci. If they looked familiar, that may be why."),
+
+        new Puzzle("12x12_fireball", AssetPaths.puzzle_12x12_fireball__png)
+          .setCards(3, 30)
+          .setText("This game was made in a hurry, so there has been little time for fact checking. Not everything you've been told might have been true."),
+
+        new Puzzle("12x12_insane", AssetPaths.puzzle_12x12_insane__png)
+          .setCards(3, 60)
+          .setText("Outrageous? Sure. Maybe it takes a genius like Leonardo da Vinci to solve this one. Or maybe it's impossible, who knows?"),
+
       ];
     }
     return campaign;

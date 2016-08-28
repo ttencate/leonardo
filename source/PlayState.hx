@@ -164,7 +164,11 @@ class PlayState extends FlxState {
   override public function update(elapsed: Float) {
     super.update(elapsed);
 
-    if (!complete && runner != null && runner.isSolved()) {
+    var debugSolve = false;
+#if neko
+    debugSolve = FlxG.keys.pressed.S;
+#end
+    if (!complete && ((runner != null && runner.isSolved()) || debugSolve)) {
       complete = true;
 
       Reflect.setField(FlxG.save.data, "solved_" + puzzle.name, true);
@@ -236,7 +240,7 @@ class PlayState extends FlxState {
       speedButton.toggled = false;
     }
     speedButtons[button].toggled = true;
-    speed = [0.0, 1.0, 3.0, 10.0][button];
+    speed = [0.0, 1.0, 5.0, 25.0][button];
     if (runner != null) {
       runner.speed = speed;
     }

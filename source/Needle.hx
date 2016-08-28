@@ -27,7 +27,7 @@ class Needle extends FlxSpriteGroup {
   }
 
   public function setColor(color: FlxColor) {
-    colorSprite.color = color;
+    colorSprite.color = color.getLightened(0.1);
     colorSprite.alpha = color.alpha;
   }
 

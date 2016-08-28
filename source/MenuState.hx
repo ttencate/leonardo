@@ -13,9 +13,10 @@ class MenuState extends FlxState {
 
     var x = 32.0;
     var y = 176.0;
-    var locked = false;
+    var nextLocked = false;
     for (puzzle in Puzzles.campaign) {
       var icon: FlxSprite;
+      var locked = nextLocked;
       if (locked) {
         var text = new FlxText("?");
         text.setFormat(AssetPaths.day_roman__ttf, 40, FlxColor.WHITE);
@@ -32,10 +33,10 @@ class MenuState extends FlxState {
       }
 
       if (puzzle.pattern != null && Reflect.field(FlxG.save.data, "solved_" + puzzle.name) != true) {
-        locked = true;
+        nextLocked = true;
       }
 
-      var button = new FlxUISpriteButton(x, y, icon, function() {
+      var button = new FlxUISpriteButton(x, y, icon, locked ? null : function() {
         Main.fadeState(new PlayState(puzzle));
       });
       button.loadGraphicsUpOverDown(AssetPaths.menu_button__png);
@@ -55,5 +56,15 @@ class MenuState extends FlxState {
 
     FlxG.save.data.currentPuzzle = "menu";
     FlxG.save.flush();
+  }
+
+  override public function update(elapsed: Float) {
+    super.update(elapsed);
+#if neko
+    if (FlxG.keys.justPressed.X) {
+      FlxG.save.erase();
+      Main.fadeState(new MenuState());
+    }
+#end
   }
 }

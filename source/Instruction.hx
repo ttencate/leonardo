@@ -146,7 +146,7 @@ class Instruction {
       text = "";
     }
     if (stitch) {
-      textAfterConditional.push("paint this square");
+      textAfterConditional.push("paint");
     }
     if (move) {
       var moveText = "move the brush";
