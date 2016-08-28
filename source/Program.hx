@@ -9,11 +9,13 @@ class Program {
 
   public var cards(default, null): Array<Array<Instruction>>;
   public var colorIndices(default, null): Array<Int>;
+  public var wheelStarts(default, null): Array<Int>;
 
   public function new(puzzle: Puzzle) {
     this.puzzle = puzzle;
     cards = [for (i in 0...puzzle.numCards) [for (j in 0...puzzle.cardSize) new Instruction()]];
     colorIndices = [for (i in 0...puzzle.numCards) i % puzzle.colors.length];
+    wheelStarts = [for (i in 0...puzzle.numWheels) 0];
   }
 
   public function getThreadColor(card: Int): FlxColor {
@@ -24,6 +26,7 @@ class Program {
     return Json.stringify({
       cards: [for (card in cards) [for (instruction in card) instruction.toInt()]],
       colorIndices: colorIndices,
+      wheelStarts: wheelStarts,
     });
   }
 
@@ -43,6 +46,12 @@ class Program {
         var colorIndex = j.colorIndices[card];
         if (colorIndex != null) {
           colorIndices[card] = colorIndex % puzzle.colors.length;
+        }
+      }
+      for (wheel in 0...wheelStarts.length) {
+        var start = j.wheelStarts[wheel];
+        if (start != null) {
+          wheelStarts[wheel] = start % Wheel.COUNT;
         }
       }
     } catch (ex: Dynamic) {

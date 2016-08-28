@@ -5,6 +5,8 @@ import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxGroup;
 import flixel.group.FlxSpriteGroup;
+import flixel.input.mouse.FlxMouseButton;
+import flixel.input.mouse.FlxMouseButton.FlxMouseButtonID;
 import flixel.addons.ui.FlxUISpriteButton;
 import flixel.math.FlxMath;
 import flixel.text.FlxText;
@@ -21,6 +23,7 @@ class PlayState extends FlxState {
   private var help: HelpText;
   private var punchCards: Array<PunchCard>;
   private var wheels: Array<Wheel>;
+  private var wheelButtons: Array<WheelButton>;
 
   private var runStopButton: FlxUISpriteButton;
   private var speedButtons: Array<FlxUISpriteButton>;
@@ -106,10 +109,17 @@ class PlayState extends FlxState {
     }
 
     wheels = [];
+    wheelButtons = [];
     for (i in 0...puzzle.numWheels) {
       var wheel = new Wheel(FlxG.width + 80, FlxG.height - 256 + 128 * i);
       add(wheel);
       wheels.push(wheel);
+
+      var wheelButton = new WheelButton(FlxG.width - 64, FlxG.height - 256 - 32 + 128 * i, function() {
+        onWheelButtonClick(i);
+      }, help);
+      add(wheelButton);
+      wheelButtons.push(wheelButton);
     }
     if (puzzle.numWheels > 0) {
       add(new FlxSprite(FlxG.width - 128, FlxG.height - 384, AssetPaths.wheels_overlay__png));
@@ -146,10 +156,11 @@ class PlayState extends FlxState {
 
     embroidery.removeAllStitches();
 
-    for (wheel in wheels) {
+    for (i in 0...wheels.length) {
+      var wheel = wheels[i];
       wheel.alpha = 1;
-      wheel.value = 0;
-      wheel.moveToValue(0);
+      wheel.value = program.wheelStarts[i];
+      wheel.moveToValue(wheel.value);
     }
   }
 
@@ -186,9 +197,23 @@ class PlayState extends FlxState {
     }
   }
 
+  private function onWheelButtonClick(index: Int) {
+    var wheel = wheels[index];
+    if (FlxG.mouse.pressedRight) {
+      wheel.value--;
+    } else {
+      wheel.value++;
+    }
+    wheel.moveToValue(wheel.value);
+    program.wheelStarts[index] = wheel.value;
+  }
+
   private function enableInput(enabled: Bool) {
     for (punchCard in punchCards) {
       punchCard.inputEnabled = enabled;
+    }
+    for (wheelButton in wheelButtons) {
+      wheelButton.visible = enabled;
     }
   }
 }

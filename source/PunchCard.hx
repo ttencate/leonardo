@@ -120,6 +120,7 @@ class PunchCard extends FlxSpriteGroup {
 
     var ch = colorHighlight;
     if (x >= ch.x && x < ch.x + ch.width && y >= ch.y && y < ch.y + ch.height) {
+      help.set("Click or right-click to change the colour used by this punch card");
       colorHighlight.visible = true;
       colorHighlight.alpha = FlxG.mouse.pressed ? 0.5 : 1.0;
       if (FlxG.mouse.justPressed) {
