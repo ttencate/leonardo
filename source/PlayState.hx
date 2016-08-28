@@ -187,6 +187,8 @@ class PlayState extends FlxState {
       FlxTween.tween(overlay, {alpha: 1}, 1.0, {ease: FlxEase.sineInOut});
 
       embroidery.antialiasing = true;
+      embroidery.pixelPerfectPosition = false;
+      embroidery.pixelPerfectRender = false;
       var s = 2;
       FlxTween.tween(embroidery.scale, {x: s, y: s}, 1.0, {ease: FlxEase.quadInOut});
       FlxTween.tween(embroidery, {x: Math.floor((FlxG.width - embroidery.width) / 2), y: Math.floor((FlxG.height - embroidery.height) / 2)}, 1.0, {ease: FlxEase.quadInOut});
