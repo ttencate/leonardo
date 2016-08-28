@@ -4,8 +4,9 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxSpriteGroup;
-import flixel.math.FlxMath;
 import flixel.addons.ui.FlxUISpriteButton;
+import flixel.math.FlxMath;
+import flixel.text.FlxText;
 import flixel.util.FlxColor;
 
 class PlayState extends FlxState {
@@ -44,6 +45,16 @@ class PlayState extends FlxState {
     backButton.loadGraphicsUpOverDown(AssetPaths.square_button__png);
     backButton.labelOffsets[2].set(1, 1);
     add(backButton);
+
+    if (puzzle.text != null) {
+      var instructions = new FlxText(16, 96, 240, puzzle.text);
+      instructions.setFormat(AssetPaths.day_roman__ttf, 20, FlxColor.WHITE);
+      instructions.setBorderStyle(SHADOW, 0x80000000, 2);
+      while (instructions.height > 160) {
+        instructions.size -= 1;
+      }
+      add(instructions);
+    }
 
     runStopButton = new FlxUISpriteButton(16, 272, new FlxSprite(AssetPaths.run__png), onRunStopClick);
     runStopButton.loadGraphicsUpOverDown(AssetPaths.square_button__png);

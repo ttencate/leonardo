@@ -8,17 +8,16 @@ import openfl.display.BitmapData;
 
 class Puzzle {
 
-  public var numCards(default, null): Int;
-  public var cardSize(default, null): Int;
+  public var numCards(default, null): Int = 3;
+  public var cardSize(default, null): Int = 84;
   public var patternAsset(default, null): Null<String>;
   public var cols(default, null): Int;
   public var rows(default, null): Int;
   public var pattern(default, null): Null<Array<Array<FlxColor>>>;
   public var colors(default, null): Array<FlxColor>;
+  public var text(default, null): Null<String>;
 
-  public function new(numCards: Int, cardSize: Int, patternAsset: Null<String>) {
-    this.numCards = numCards;
-    this.cardSize = cardSize;
+  public function new(patternAsset: Null<String>) {
     this.patternAsset = patternAsset;
     if (patternAsset != null) {
       var bitmap = FlxG.bitmap.add(patternAsset).bitmap;
@@ -32,6 +31,17 @@ class Puzzle {
       pattern = null;
       colors = [0xffffffff, 0xff111111, 0xffFF4136, 0xffFFDC00, 0xff0074D9];
     }
+  }
+
+  public function setCards(numCards: Int, cardSize: Int): Puzzle {
+    this.numCards = numCards;
+    this.cardSize = cardSize;
+    return this;
+  }
+
+  public function setText(text: String): Puzzle {
+    this.text = text;
+    return this;
   }
 
   public function colorAt(col: Int, row: Int) {
