@@ -9,6 +9,7 @@ import openfl.display.BitmapData;
 class Puzzle {
 
   public var name(default, null): String;
+  public var title(default, null): String;
   public var numCards(default, null): Int = 3;
   public var cardSize(default, null): Int = 84;
   public var numWheels(default, null): Int = 2;
@@ -35,6 +36,11 @@ class Puzzle {
       pattern = null;
       colors = [0xff111111, 0xffffffff, 0xff001f3f, 0xff0074d9, 0xff7fdbff, 0xff39cccc, 0xff3d9970, 0xff2ecc40, 0xff01ff70, 0xffffdc00, 0xffff851b, 0xffff4136, 0xff85144b, 0xfff012be, 0xffb10dc9, 0xffaaaaaa, 0xffdddddd];
     }
+  }
+
+  public function setTitle(title: String): Puzzle {
+    this.title = title;
+    return this;
   }
 
   public function setCards(numCards: Int, cardSize: Int): Puzzle {

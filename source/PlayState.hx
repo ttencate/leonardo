@@ -254,6 +254,15 @@ class PlayState extends FlxState {
     overlayGroup.add(overlay);
     FlxTween.tween(overlay, {alpha: 1}, 1.0, {ease: FlxEase.sineInOut});
 
+    if (puzzle.title != null) {
+      var titleText = new FlxText(0, 16, FlxG.width, '“${puzzle.title}” by Leonardo da Vinci');
+      titleText.setFormat(AssetPaths.day_roman__ttf, 20, FlxColor.WHITE, CENTER);
+      titleText.setBorderStyle(SHADOW, 0x80000000, 2);
+      titleText.alpha = 0;
+      overlayGroup.add(titleText);
+      FlxTween.tween(titleText, {alpha: 1}, 1.0, {ease: FlxEase.sineInOut});
+    }
+
     var resultText = new FlxText(0, FlxG.height - 48, FlxG.width, 'Completed in ${cycleCount} cycles, using ${program.countHoles()} holes');
     resultText.setFormat(AssetPaths.day_roman__ttf, 20, FlxColor.WHITE, CENTER);
     resultText.setBorderStyle(SHADOW, 0x80000000, 2);

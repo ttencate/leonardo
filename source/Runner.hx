@@ -218,7 +218,6 @@ class Runner extends FlxGroup {
           switchState(NEXT_INSTRUCTION_END);
         }
       case NEXT_INSTRUCTION_END:
-        trace(needle.col, needle.row);
         cycleCount++;
         if (embroidery.matches(puzzle)) {
           switchState(DONE, "Complete!");
