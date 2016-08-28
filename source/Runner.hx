@@ -3,6 +3,7 @@ package;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup;
 import flixel.math.FlxMath;
+import flixel.tweens.FlxEase;
 import flixel.util.FlxColor;
 
 class Runner extends FlxGroup {
@@ -91,7 +92,8 @@ class Runner extends FlxGroup {
         }
       case WHEEL_CHANGE(newValue):
         var wheel = wheels[instruction.wheel];
-        wheel.moveToValue(FlxMath.lerp(wheel.value, newValue, stateFraction));
+        var f = FlxEase.elasticOut(stateFraction);
+        wheel.moveToValue(FlxMath.lerp(wheel.value, newValue, f));
         if (stateDone) {
           wheel.value = newValue;
           switchState(WHEEL_CHANGE_END);
@@ -140,10 +142,11 @@ class Runner extends FlxGroup {
         }
       case STITCH(sprite):
         var S = 0.5;
-        var dx = Math.sin(3 * stateFraction * 2 * Math.PI);
-        var dy = -Math.sin(stateFraction * 2 * Math.PI);
+        var f = FlxEase.sineInOut(stateFraction);
+        var dx = Math.sin(3 * f * 2 * Math.PI);
+        var dy = -Math.sin(f * 2 * Math.PI);
         needle.setEmbroideryPos(needle.col + S * dx, needle.row + S * dy);
-        sprite.alpha = stateFraction;
+        sprite.alpha = FlxEase.quadIn(stateFraction);
         if (stateDone) {
           remove(sprite);
           embroidery.stampStitch(needle.col, needle.row, program.getThreadColor(currentCard));
@@ -168,9 +171,10 @@ class Runner extends FlxGroup {
           switchState(MOVE_NEEDLE_END);
         }
       case MOVE_NEEDLE(toCol, toRow):
+        var f = FlxEase.quadInOut(stateFraction);
         needle.setEmbroideryPos(
-            FlxMath.lerp(needle.col, toCol, stateFraction),
-            FlxMath.lerp(needle.row, toRow, stateFraction));
+            FlxMath.lerp(needle.col, toCol, f),
+            FlxMath.lerp(needle.row, toRow, f));
         if (stateDone) {
           needle.col = toCol;
           needle.row = toRow;
@@ -199,11 +203,12 @@ class Runner extends FlxGroup {
           }
         }
       case NEXT_INSTRUCTION(nextCard, nextInstruction, nextStepDirection):
+        var f = FlxEase.quadInOut(stateFraction);
         setColHighlightPos(
-            FlxMath.lerp(currentCard, nextCard, stateFraction),
-            FlxMath.lerp(currentInstruction, nextInstruction, stateFraction));
+            FlxMath.lerp(currentCard, nextCard, f),
+            FlxMath.lerp(currentInstruction, nextInstruction, f));
         needle.setColor(
-            FlxColor.interpolate(program.getThreadColor(currentCard), program.getThreadColor(nextCard), stateFraction));
+            FlxColor.interpolate(program.getThreadColor(currentCard), program.getThreadColor(nextCard), f));
         if (stateDone) {
           currentCard = nextCard;
           currentInstruction = nextInstruction;

@@ -34,6 +34,7 @@ class PlayState extends FlxState {
   private var overlayGroup: FlxGroup;
   private var paintingGroup: FlxGroup;
   private var runnerGroup: FlxGroup;
+  private var brushGroup: FlxGroup;
 
   private var runStopButton: FlxUISpriteButton;
   private var speedButtons: Array<FlxUISpriteButton>;
@@ -60,6 +61,7 @@ class PlayState extends FlxState {
     add(overlayGroup = new FlxGroup());
     add(paintingGroup = new FlxGroup());
     add(runnerGroup = new FlxGroup());
+    add(brushGroup = new FlxGroup());
 
     backgroundGroup.add(new FlxSprite(AssetPaths.background__png));
 
@@ -144,7 +146,7 @@ class PlayState extends FlxState {
     paintingGroup.add(embroidery);
 
     needle = new Needle(embroidery);
-    paintingGroup.add(needle);
+    brushGroup.add(needle);
 
     reset();
 
