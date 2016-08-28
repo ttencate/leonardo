@@ -104,6 +104,8 @@ class PunchCard extends FlxSpriteGroup {
         toggleHole(col, row);
       }
       help.set(program.cards[number][col].toString());
+    } else if (col >= -3 && col < cols && row >= 0 && row < rows && isRowEnabled(row)) {
+      help.set(Instruction.helpForRow(row));
     } else {
       colHighlight.visible = false;
       rowHighlight.visible = false;

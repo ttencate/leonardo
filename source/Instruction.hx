@@ -66,6 +66,23 @@ class Instruction {
     }
   }
 
+  public static function helpForRow(row: Int): String {
+    switch (row) {
+      case 0: return "Select the bottom wheel instead of the top one";
+      case 1: return "Increment the value of the selected wheel (after " + (Wheel.COUNT - 1) + ", wraps back to 0)";
+      case 2: return "Decrement the value of the selected wheel (after 0, wraps back to " + (Wheel.COUNT - 1) + ")";
+      case 3: return "Only execute the rest of this instruction if the wheel is 0";
+      case 4: return "Only execute the rest of this instruction if the wheel is not 0";
+      case 5: return "Paint at the current location in the colour selected for this punch card";
+      case 6: return "Jump up/down to another punch card and/or switch read direction to left/right";
+      case 7: return "Move the brush up, or jump to the previous punch card (wraps around)";
+      case 8: return "Move the brush down, or jump to the next punch card (wraps around)";
+      case 9: return "Move the brush left, or start reading instructions to the left";
+      case 10: return "Move the brush right, or start reading instructions to the right";
+      default: return "";
+    }
+  }
+
   public function toString() {
     var text = "";
     var mentionedWheel = false;
@@ -107,10 +124,10 @@ class Instruction {
 
     var textAfterConditional = [];
     if (stitch) {
-      textAfterConditional.push("make a stitch");
+      textAfterConditional.push("paint this square");
     }
     if (move) {
-      var moveText = "move the needle";
+      var moveText = "move the brush";
       if (left) {
         moveText += " left";
       } else if (right) {
