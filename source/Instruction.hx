@@ -141,6 +141,10 @@ class Instruction {
     }
 
     var textAfterConditional = [];
+    if (!conditional && text != "") {
+      textAfterConditional.push(text);
+      text = "";
+    }
     if (stitch) {
       textAfterConditional.push("paint this square");
     }
