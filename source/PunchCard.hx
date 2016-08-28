@@ -11,6 +11,7 @@ class PunchCard extends FlxSpriteGroup {
 
   public var inputEnabled: Bool = true;
 
+  private var puzzle: Puzzle;
   private var program: Program;
   private var number: Int;
   private var help: HelpText;
@@ -31,8 +32,9 @@ class PunchCard extends FlxSpriteGroup {
 
   private var swatch: FlxSprite;
 
-  public function new(program: Program, number: Int, help: HelpText) {
+  public function new(puzzle: Puzzle, program: Program, number: Int, help: HelpText) {
     super();
+    this.puzzle = puzzle;
     this.program = program;
     this.number = number;
     this.help = help;
@@ -45,6 +47,14 @@ class PunchCard extends FlxSpriteGroup {
 
     add(new FlxSprite(AssetPaths.punch_card__png));
     add(new FlxSprite(paddingX + program.cardSize * holeWidth, 0, AssetPaths.punch_card_right__png));
+    for (row in 0...rows) {
+      if (!isRowEnabled(row)) {
+        var blackOut = new ColorSprite(30, 10, 0xff483e37);
+        blackOut.x = 64;
+        blackOut.y = row * holeHeight;
+        add(blackOut);
+      }
+    }
 
     colHighlight = makeColHighlight();
     colHighlight.y = paddingY;
@@ -65,6 +75,10 @@ class PunchCard extends FlxSpriteGroup {
     add(colorHighlight);
   }
 
+  public function isRowEnabled(row: Int): Bool {
+    return Instruction.isRowEnabled(row, puzzle);
+  }
+
   public function makeColHighlight(): FlxSprite {
     return new ColorSprite(holeWidth, rows * holeHeight, highlightColor);
   }
@@ -81,7 +95,7 @@ class PunchCard extends FlxSpriteGroup {
     var y = FlxG.mouse.y;
     var col = Math.floor((x - this.x - paddingX) / holeWidth);
     var row = Math.floor((y - this.y - paddingY) / holeHeight);
-    if (col >= 0 && col < cols && row >= 0 && row < rows) {
+    if (col >= 0 && col < cols && row >= 0 && row < rows && isRowEnabled(row)) {
       colHighlight.visible = true;
       rowHighlight.visible = true;
       colHighlight.x = this.x + paddingX + col * holeWidth;

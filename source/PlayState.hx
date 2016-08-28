@@ -99,7 +99,7 @@ class PlayState extends FlxState {
     var y: Float = 384 + 14;
     punchCards = [];
     for (i in 0...program.numCards) {
-      var punchCard = new PunchCard(program, i, help);
+      var punchCard = new PunchCard(puzzle, program, i, help);
       punchCard.y = y;
       y += punchCard.height;
       add(punchCard);
@@ -107,12 +107,14 @@ class PlayState extends FlxState {
     }
 
     wheels = [];
-    for (i in 0...2) {
+    for (i in 0...puzzle.numWheels) {
       var wheel = new Wheel(FlxG.width + 80, FlxG.height - 256 + 128 * i);
       add(wheel);
       wheels.push(wheel);
     }
-    add(new FlxSprite(FlxG.width - 128, FlxG.height - 384, AssetPaths.wheels_overlay__png));
+    if (puzzle.numWheels > 0) {
+      add(new FlxSprite(FlxG.width - 128, FlxG.height - 384, AssetPaths.wheels_overlay__png));
+    }
 
     Main.fadeIn();
   }

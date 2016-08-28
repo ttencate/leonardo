@@ -10,6 +10,8 @@ class Puzzle {
 
   public var numCards(default, null): Int = 3;
   public var cardSize(default, null): Int = 84;
+  public var numWheels(default, null): Int = 2;
+  public var features(default, null): Array<Feature> = [INCREMENT, DECREMENT, TEST_ZERO, TEST_NONZERO, JUMP];
   public var patternAsset(default, null): Null<String>;
   public var cols(default, null): Int;
   public var rows(default, null): Int;
@@ -39,9 +41,23 @@ class Puzzle {
     return this;
   }
 
+  public function setNumWheels(numWheels: Int): Puzzle {
+    this.numWheels = numWheels;
+    return this;
+  }
+
+  public function setFeatures(features: Array<Feature>) {
+    this.features = features;
+    return this;
+  }
+
   public function setText(text: String): Puzzle {
     this.text = text;
     return this;
+  }
+
+  public function hasFeature(f: Feature): Bool {
+    return features.indexOf(f) >= 0;
   }
 
   public function colorAt(col: Int, row: Int) {

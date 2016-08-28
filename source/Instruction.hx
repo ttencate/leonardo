@@ -45,6 +45,27 @@ class Instruction {
   private function get_colDelta(): Int { return left ? -1 : right ? 1 : 0; }
   private function get_rowDelta(): Int { return up ? -1 : down ? 1 : 0; }
 
+  public static function isRowEnabled(row: Int, puzzle: Puzzle) {
+    switch (row) {
+      case 0:
+        return puzzle.numWheels > 1;
+      case 1:
+        return puzzle.hasFeature(INCREMENT);
+      case 2:
+        return puzzle.hasFeature(DECREMENT);
+      case 3:
+        return puzzle.hasFeature(TEST_ZERO);
+      case 4:
+        return puzzle.hasFeature(TEST_NONZERO);
+      case 5:
+        return true;
+      case 6:
+        return puzzle.hasFeature(JUMP);
+      default:
+        return true;
+    }
+  }
+
   public function toString() {
     var text = "";
     var mentionedWheel = false;
