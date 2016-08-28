@@ -28,6 +28,8 @@ class Runner extends FlxGroup {
   private var colHighlight: FlxSprite;
   private var text: String = "";
 
+  public var cycleCount(default, null): Int = 0;
+
   public function new(puzzle: Puzzle, program: Program, embroidery: Embroidery, needle: Needle, punchCards: Array<PunchCard>, wheels: Array<Wheel>, help: HelpText) {
     super();
     this.puzzle = puzzle;
@@ -216,7 +218,9 @@ class Runner extends FlxGroup {
           switchState(NEXT_INSTRUCTION_END);
         }
       case NEXT_INSTRUCTION_END:
-        if (isSolved()) {
+        trace(needle.col, needle.row);
+        cycleCount++;
+        if (embroidery.matches(puzzle)) {
           switchState(DONE, "Complete!");
         } else {
           switchState(INSTRUCTION_START);
@@ -239,7 +243,7 @@ class Runner extends FlxGroup {
   }
 
   public function isSolved(): Bool {
-    return embroidery.matches(puzzle);
+    return state == DONE && embroidery.matches(puzzle);
   }
 }
 

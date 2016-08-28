@@ -41,6 +41,7 @@ class PlayState extends FlxState {
   private var linkButton: FlxUISpriteButton;
   private var runStopButton: FlxUISpriteButton;
   private var speedButtons: Array<FlxUISpriteButton>;
+  private var statusText: FlxText;
 
   private var runner: Runner;
   private var speed: Float = 1;
@@ -85,6 +86,11 @@ class PlayState extends FlxState {
     linkButton.loadGraphicsUpOverDown(AssetPaths.square_button__png);
     linkButton.labelOffsets[2].set(1, 1);
     controlsGroup.add(linkButton);
+
+    statusText = new FlxText(176 - 2, 16 + 12);
+    statusText.setFormat(AssetPaths.day_roman__ttf, 14, 0xffac9d93);
+    statusText.setBorderStyle(SHADOW, 0x80000000, 2);
+    controlsGroup.add(statusText);
 
     if (puzzle.text != null) {
       var instructions = new FlxText(16, 96, 240, puzzle.text);
@@ -178,6 +184,32 @@ class PlayState extends FlxState {
   override public function update(elapsed: Float) {
     super.update(elapsed);
 
+    updateStatusText();
+    showTooltips();
+
+    var debugSolve = false;
+#if neko
+    debugSolve = FlxG.keys.pressed.S;
+#end
+    if (!complete && ((runner != null && runner.isSolved()) || debugSolve)) {
+      win();
+    }
+    if (complete && FlxG.mouse.justPressed) {
+      Main.fadeState(new MenuState());
+    }
+  }
+
+  private function updateStatusText() {
+    var statusText = 'Holes: ${program.countHoles()}';
+    if (runner != null) {
+      statusText += '\nCycles: ${runner.cycleCount}';
+    }
+    if (this.statusText.text != statusText) {
+      this.statusText.text = statusText;
+    }
+  }
+
+  private function showTooltips() {
     if (runStopButton.mouseIsOver) {
       if (runner != null) {
         help.set("Abort the run and reset the machine");
@@ -201,25 +233,15 @@ class PlayState extends FlxState {
         }
       }
     }
-
-    var debugSolve = false;
-#if neko
-    debugSolve = FlxG.keys.pressed.S;
-#end
-    if (!complete && ((runner != null && runner.isSolved()) || debugSolve)) {
-      win();
-    }
-    if (complete && FlxG.mouse.justPressed) {
-      Main.fadeState(new MenuState());
-    }
   }
 
-  public function win() {
+  private function win() {
     complete = true;
 
     Reflect.setField(FlxG.save.data, "solved_" + puzzle.name, true);
     FlxG.save.flush();
 
+    var cycleCount = runner.cycleCount;
     runnerGroup.remove(runner);
     runner = null;
 
@@ -231,6 +253,13 @@ class PlayState extends FlxState {
     overlay.alpha = 0;
     overlayGroup.add(overlay);
     FlxTween.tween(overlay, {alpha: 1}, 1.0, {ease: FlxEase.sineInOut});
+
+    var resultText = new FlxText(0, FlxG.height - 48, FlxG.width, 'Completed in ${cycleCount} cycles, using ${program.countHoles()} holes');
+    resultText.setFormat(AssetPaths.day_roman__ttf, 20, FlxColor.WHITE, CENTER);
+    resultText.setBorderStyle(SHADOW, 0x80000000, 2);
+    resultText.alpha = 0;
+    overlayGroup.add(resultText);
+    FlxTween.tween(resultText, {alpha: 1}, 1.0, {ease: FlxEase.sineInOut});
 
     embroidery.antialiasing = true;
     embroidery.pixelPerfectPosition = false;

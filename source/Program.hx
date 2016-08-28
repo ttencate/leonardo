@@ -22,6 +22,20 @@ class Program {
     return puzzle.colors[colorIndices[card]];
   }
 
+  public function countHoles(): Int {
+    var count = 0;
+    for (card in cards) {
+      for (instruction in card) {
+        for (hole in instruction.holes) {
+          if (hole) {
+            count++;
+          }
+        }
+      }
+    }
+    return count;
+  }
+
   public function toJson(): String {
     return Json.stringify({
       cards: [for (card in cards) [for (instruction in card) instruction.toInt()]],
