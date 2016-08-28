@@ -38,6 +38,13 @@ class PlayState extends FlxState {
 
     add(new FlxSprite(AssetPaths.background__png));
 
+    var backButton = new FlxUISpriteButton(16, 16, new FlxSprite(AssetPaths.back__png), function() {
+      Main.fadeState(new MenuState());
+    });
+    backButton.loadGraphicsUpOverDown(AssetPaths.square_button__png);
+    backButton.labelOffsets[2].set(1, 1);
+    add(backButton);
+
     runStopButton = new FlxUISpriteButton(16, 272, new FlxSprite(AssetPaths.run__png), onRunStopClick);
     runStopButton.loadGraphicsUpOverDown(AssetPaths.square_button__png);
     runStopButton.labelOffsets[2].set(1, 1);
@@ -107,6 +114,8 @@ class PlayState extends FlxState {
       wheels.push(wheel);
     }
     add(new FlxSprite(FlxG.width - 128, FlxG.height - 384, AssetPaths.wheels_overlay__png));
+
+    Main.fadeIn();
   }
 
   override public function update(elapsed: Float) {
