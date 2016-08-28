@@ -13,8 +13,17 @@ class Puzzles {
           .setFeatures([])
           .setText("Welcome to Leonardo's Painting Machine!\nYou program the machine using punch cards to reproduce the sketch shown on the right. The card is read left to right. Holes in the punch card tell the brush where to move and when to paint."),
 
-        new Puzzle("", AssetPaths.puzzle04__png),
-        new Puzzle("", AssetPaths.puzzle04__png),
+        new Puzzle("5x5_horizontal_stripes", AssetPaths.puzzle_5x5_horizontal_stripes__png)
+          .setCards(2, 10)
+          .setNumWheels(0)
+          .setFeatures([JUMP])
+          .setText("You now have two punch cards available, one for each colour. By punching a hole in the 'jump' row, you can switch up or down between them. You can also change the direction of reading: left or right."),
+
+        new Puzzle("6x6_landscape", AssetPaths.puzzle_6x6_landscape__png)
+          .setCards(2, 15)
+          .setNumWheels(0)
+          .setFeatures([JUMP])
+          .setText("The painting machine was one of many inventions by Leonardo da Vinci. He kept it secret, because he was afraid that people would steal his idea."),
         new Puzzle("", AssetPaths.puzzle04__png),
         new Puzzle("", AssetPaths.puzzle04__png),
 
