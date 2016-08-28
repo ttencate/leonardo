@@ -9,7 +9,7 @@ class Wheel extends FlxSpriteGroup {
 
   public static inline var COUNT = 12;
 
-  public var value: Int = 0;
+  public var value(default, set): Int = 0;
   private var labels: Array<FlxText>;
 
   public function new(x: Float, y: Float) {
@@ -32,6 +32,11 @@ class Wheel extends FlxSpriteGroup {
 
   public function moveToValue(value: Float) {
     angle = -360 * value / COUNT;
+  }
+
+  private function set_value(value: Int): Int {
+    value = ((value % COUNT) + COUNT) % COUNT;
+    return this.value = value;
   }
 
   override private function set_angle(a: Float): Float {

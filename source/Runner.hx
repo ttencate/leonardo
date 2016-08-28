@@ -53,6 +53,7 @@ class Runner extends FlxGroup {
     embroidery.removeAllStitches();
 
     for (wheel in wheels) {
+      wheel.alpha = 1;
       wheel.value = 0;
       wheel.moveToValue(0);
     }
@@ -98,7 +99,8 @@ class Runner extends FlxGroup {
       case WHEEL_CHANGE_START:
         if (instruction.increment || instruction.decrement) {
           var newValue = wheels[instruction.wheel].value + instruction.wheelDelta;
-          switchState(WHEEL_CHANGE(newValue), 1.0, instruction.increment ? "Incrementing..." : "Decrementing...");
+          switchState(WHEEL_CHANGE(newValue), 1.0,
+              instruction.increment ? "Incrementing..." : "Decrementing...");
         } else {
           switchState(WHEEL_CHANGE_END);
         }
@@ -110,6 +112,36 @@ class Runner extends FlxGroup {
           switchState(WHEEL_CHANGE_END);
         }
       case WHEEL_CHANGE_END:
+        switchState(CONDITIONAL_START);
+      case CONDITIONAL_START:
+        if (instruction.ifZero) {
+          switchState(CONDITIONAL(wheels[instruction.wheel].value == 0), 0.5,
+              "Checking " + (instruction.bottomWheel ? "bottom" : "top") + " wheel...");
+        } else if (instruction.ifNonzero) {
+          switchState(CONDITIONAL(wheels[instruction.wheel].value != 0), 0.5,
+              "Checking " + (instruction.bottomWheel ? "bottom" : "top") + " wheel...");
+        } else {
+          switchState(CONDITIONAL_END);
+        }
+      case CONDITIONAL(value):
+        var wheel = wheels[instruction.wheel];
+        if (!stateDone) {
+          wheel.alpha = 0.2 + 0.8 * (Math.floor(stateFraction * 5) % 2);
+        } else {
+          wheel.alpha = 1;
+          if (value) {
+            switchState(CONDITIONAL_END);
+          } else {
+            // XXX duplicated below
+            var nextInstruction = currentInstruction + stepDirection;
+            if (nextInstruction < 0 || nextInstruction >= program.cardSize) {
+              switchState(DONE, "Done");
+            } else {
+              switchState(NEXT_INSTRUCTION(currentCard, nextInstruction, stepDirection), 0.5);
+            }
+          }
+        }
+      case CONDITIONAL_END:
         switchState(STITCH_START);
       case STITCH_START:
         if (instruction.stitch &&
@@ -184,6 +216,7 @@ class Runner extends FlxGroup {
           var nextCard = (currentCard + 1) % program.numCards;
           switchState(NEXT_INSTRUCTION(nextCard, currentInstruction, nextStepDirection), 0.5);
         } else {
+          // XXX duplicated above
           var nextInstruction = currentInstruction + nextStepDirection;
           if (nextInstruction < 0 || nextInstruction >= program.cardSize) {
             switchState(DONE, "Done");
@@ -234,6 +267,9 @@ enum State {
   WHEEL_CHANGE_START;
   WHEEL_CHANGE(newValue: Int);
   WHEEL_CHANGE_END;
+  CONDITIONAL_START;
+  CONDITIONAL(value: Bool);
+  CONDITIONAL_END;
   STITCH_START;
   STITCH(sprite: FlxSprite);
   STITCH_END;
