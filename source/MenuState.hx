@@ -13,17 +13,28 @@ class MenuState extends FlxState {
 
     var x = 32.0;
     var y = 176.0;
+    var locked = false;
     for (puzzle in Puzzles.campaign) {
       var icon: FlxSprite;
-      if (puzzle.pattern == null) {
+      if (locked) {
+        var text = new FlxText("?");
+        text.setFormat(AssetPaths.day_roman__ttf, 40, FlxColor.WHITE);
+        text.setBorderStyle(SHADOW, 0x80000000, 2);
+        icon = text;
+      } else if (puzzle.pattern == null) {
         var text = new FlxText("Sandbox");
-        text.setFormat(AssetPaths.day_roman__ttf, 20, FlxColor.WHITE);
+        text.setFormat(AssetPaths.day_roman__ttf, 40, FlxColor.WHITE);
         text.setBorderStyle(SHADOW, 0x80000000, 2);
         icon = text;
       } else {
         icon = puzzle.createPatternSprite();
         icon.scale.set(0.5, 0.5);
       }
+
+      if (puzzle.pattern != null && Reflect.field(FlxG.save.data, "solved_" + puzzle.name) != true) {
+        locked = true;
+      }
+
       var button = new FlxUISpriteButton(x, y, icon, function() {
         Main.fadeState(new PlayState(puzzle));
       });

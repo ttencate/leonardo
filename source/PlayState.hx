@@ -167,6 +167,9 @@ class PlayState extends FlxState {
     if (!complete && runner != null && runner.isSolved()) {
       complete = true;
 
+      Reflect.setField(FlxG.save.data, "solved_" + puzzle.name, true);
+      FlxG.save.flush();
+
       runnerGroup.remove(runner);
       runner = null;
 

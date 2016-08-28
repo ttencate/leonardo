@@ -26,7 +26,7 @@ class Puzzles {
           .setCards(2, 10)
           .setNumWheels(0)
           .setFeatures([JUMP])
-          .setText("You now have two punch cards available, one for each colour. By punching a hole in the 'jump' row, you can switch up or down between them. You can also change the direction of reading: left or right."),
+          .setText("Each punch card paints with a different colour. By punching a hole in the 'jump' row combined with a direction, you can switch up or down between them. You can also change the direction of reading: left or right."),
 
         new Puzzle("6x6_landscape", AssetPaths.puzzle_6x6_landscape__png)
           .setCards(2, 15)
@@ -42,13 +42,24 @@ class Puzzles {
 
         // SECOND ROW
 
-        new Puzzle("", AssetPaths.puzzle04__png)
-          .setText("In fact, Da Vinci was so secretive about this machine that nobody had ever heard about it before this game was made."),
+        new Puzzle("12x5_red_yellow_blue", AssetPaths.puzzle_12x5_red_yellow_blue__png)
+          .setCards(3, 10)
+          .setNumWheels(1)
+          .setFeatures([JUMP, DECREMENT, TEST_NONZERO])
+          .setText("Wheels can be used to keep track of a counter. Set an initial value by clicking it. Punch holes for decrementing and testing whether the counter is 0."),
+
+        new Puzzle("12x12_diagonal", AssetPaths.puzzle_12x12_diagonal__png)
+          .setCards(3, 25)
+          .setText("The machine actually has two counter wheels available. Punch a hole in the first row to select the bottom wheel instead of the top one."),
+
+        new Puzzle("sandbox", null)
+          .setText("Welcome to the sandbox. Let's make a happy little painting. This is your world. You can do anything you want to do."),
+
+        new Puzzle("11x12_waves", AssetPaths.puzzle_11x12_waves__png)
+          .setCards(3, 25)
+          .setText("Da Vinci was so secretive about this painting machine that nobody had ever heard about it before this game was made."),
 
         new Puzzle("", AssetPaths.puzzle04__png),
-        new Puzzle("", AssetPaths.puzzle04__png),
-        new Puzzle("", AssetPaths.puzzle04__png),
-        new Puzzle("", AssetPaths.puzzle10__png),
 
         // THIRD ROW
 
@@ -63,9 +74,6 @@ class Puzzles {
   }
 
   public static function find(name: String): Null<Puzzle> {
-    if (name == sandbox.name) {
-      return sandbox;
-    }
     for (puzzle in campaign) {
       if (puzzle.name == name) {
         return puzzle;
@@ -73,7 +81,4 @@ class Puzzles {
     }
     return null;
   }
-
-  public static var sandbox(default, null) = new Puzzle("sandbox", null);
-
 }
