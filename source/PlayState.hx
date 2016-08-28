@@ -31,8 +31,9 @@ class PlayState extends FlxState {
   private var patternGroup: FlxGroup;
   private var controlsGroup: FlxGroup;
   private var programGroup: FlxGroup;
-  private var runnerGroup: FlxGroup;
+  private var overlayGroup: FlxGroup;
   private var paintingGroup: FlxGroup;
+  private var runnerGroup: FlxGroup;
 
   private var runStopButton: FlxUISpriteButton;
   private var speedButtons: Array<FlxUISpriteButton>;
@@ -56,8 +57,9 @@ class PlayState extends FlxState {
     add(patternGroup = new FlxGroup());
     add(controlsGroup = new FlxGroup());
     add(programGroup = new FlxGroup());
-    add(runnerGroup = new FlxGroup());
+    add(overlayGroup = new FlxGroup());
     add(paintingGroup = new FlxGroup());
+    add(runnerGroup = new FlxGroup());
 
     backgroundGroup.add(new FlxSprite(AssetPaths.background__png));
 
@@ -172,7 +174,7 @@ class PlayState extends FlxState {
 
       var overlay = new ColorSprite(FlxG.width, FlxG.height, 0xff483e37);
       overlay.alpha = 0;
-      runnerGroup.add(overlay);
+      overlayGroup.add(overlay);
       FlxTween.tween(overlay, {alpha: 1}, 1.0, {ease: FlxEase.sineInOut});
 
       embroidery.antialiasing = true;
