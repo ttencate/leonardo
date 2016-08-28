@@ -27,6 +27,24 @@ class Instruction {
   public function new() {
   }
 
+  public static function fromInt(int: Int) {
+    var instruction = new Instruction();
+    for (i in 0...instruction.holes.length) {
+      instruction.holes[i] = ((int & (1 << i)) != 0);
+    }
+    return instruction;
+  }
+
+  public function toInt(): Int {
+    var int = 0;
+    for (i in 0...holes.length) {
+      if (holes[i]) {
+        int |= (1 << i);
+      }
+    }
+    return int;
+  }
+
   private function get_bottomWheel(): Bool { return holes[0]; }
   private function get_increment(): Bool { return holes[1] && !holes[2]; }
   private function get_decrement(): Bool { return holes[2] && !holes[1]; }

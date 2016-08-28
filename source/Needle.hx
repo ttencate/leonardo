@@ -28,6 +28,7 @@ class Needle extends FlxSpriteGroup {
 
   public function setColor(color: FlxColor) {
     colorSprite.color = color;
+    colorSprite.alpha = color.alpha;
   }
 
   public function setEmbroideryPos(x: Float, y: Float) {

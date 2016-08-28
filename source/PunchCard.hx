@@ -39,14 +39,14 @@ class PunchCard extends FlxSpriteGroup {
     this.number = number;
     this.help = help;
     this.rows = program.cards[number][0].holes.length;
-    this.cols = program.cardSize;
+    this.cols = puzzle.cardSize;
 
     var holeSprite = new FlxSprite(AssetPaths.hole__png);
     holeWidth = Math.ceil(holeSprite.width);
     holeHeight = Math.ceil(holeSprite.height);
 
     add(new FlxSprite(AssetPaths.punch_card__png));
-    add(new FlxSprite(paddingX + program.cardSize * holeWidth, 0, AssetPaths.punch_card_right__png));
+    add(new FlxSprite(paddingX + puzzle.cardSize * holeWidth, 0, AssetPaths.punch_card_right__png));
     for (row in 0...rows) {
       if (!isRowEnabled(row)) {
         var blackOut = new ColorSprite(30, 10, 0xff483e37);
@@ -64,9 +64,16 @@ class PunchCard extends FlxSpriteGroup {
     add(rowHighlight);
 
     holes = [for (i in 0...(rows*cols)) null];
+    for (col in 0...cols) {
+      for (row in 0...rows) {
+        if (program.cards[number][col].holes[row]) {
+          toggleHole(col, row);
+        }
+      }
+    }
 
     swatch = new ColorSprite(30, 30, FlxColor.WHITE);
-    swatch.color = program.colors[program.colorIndices[number]];
+    swatch.color = program.getThreadColor(number);
     swatch.setPosition(14, 40);
     add(swatch);
 
@@ -138,7 +145,7 @@ class PunchCard extends FlxSpriteGroup {
   }
 
   private function cycleColor() {
-    program.colorIndices[number] = (program.colorIndices[number] + 1) % program.colors.length;
+    program.colorIndices[number] = (program.colorIndices[number] + 1) % puzzle.colors.length;
     swatch.color = program.getThreadColor(number);
   }
 }

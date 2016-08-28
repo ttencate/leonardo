@@ -37,7 +37,8 @@ class PlayState extends FlxState {
   override public function create() {
     super.create();
 
-    this.program = new Program(puzzle.numCards, puzzle.cardSize, puzzle.colors);
+    this.program = new Program(puzzle);
+    this.program.fromJson(puzzle, Reflect.field(FlxG.save.data, "program_" + puzzle.name + "_0"));
 
     add(new FlxSprite(AssetPaths.background__png));
 
@@ -96,7 +97,7 @@ class PlayState extends FlxState {
 
     var y: Float = 384 + 14;
     punchCards = [];
-    for (i in 0...program.numCards) {
+    for (i in 0...puzzle.numCards) {
       var punchCard = new PunchCard(puzzle, program, i, help);
       punchCard.y = y;
       y += punchCard.height;
@@ -128,6 +129,11 @@ class PlayState extends FlxState {
     FlxG.save.flush();
   }
 
+  private function save() {
+    Reflect.setField(FlxG.save.data, "program_" + puzzle.name + "_0", program.toJson());
+    FlxG.save.flush();
+  }
+
   override public function update(elapsed: Float) {
     super.update(elapsed);
   }
@@ -135,7 +141,7 @@ class PlayState extends FlxState {
   public function reset() {
     needle.col = 0;
     needle.row = 0;
-    needle.setColor(program.getThreadColor(0));
+    needle.setColor(FlxColor.TRANSPARENT);
     needle.setEmbroideryPos(needle.col, needle.row);
 
     embroidery.removeAllStitches();
@@ -149,6 +155,7 @@ class PlayState extends FlxState {
 
   private function onRunStopClick() {
     if (runner == null) {
+      save();
       runStopButton.label = new FlxSprite(AssetPaths.stop__png);
       runner = new Runner(puzzle, program, embroidery, needle, punchCards, wheels, help);
       runner.speed = speed;
@@ -161,6 +168,11 @@ class PlayState extends FlxState {
       runner = null;
       enableInput(true);
     }
+  }
+
+  override public function switchTo(next: FlxState): Bool {
+    save();
+    return super.switchTo(next);
   }
 
   private function onSpeedButtonClick(button: Int) {

@@ -40,6 +40,8 @@ class Runner extends FlxGroup {
     colHighlight = punchCards[0].makeColHighlight();
     add(colHighlight);
     setColHighlightPos(0, 0);
+
+    needle.setColor(program.getThreadColor(0));
   }
 
   private function setColHighlightPos(card: Float, instruction: Float) {
@@ -117,7 +119,7 @@ class Runner extends FlxGroup {
           } else {
             // XXX duplicated below
             var nextInstruction = currentInstruction + stepDirection;
-            if (nextInstruction < 0 || nextInstruction >= program.cardSize) {
+            if (nextInstruction < 0 || nextInstruction >= puzzle.cardSize) {
               switchState(DONE, "Done");
             } else {
               switchState(NEXT_INSTRUCTION(currentCard, nextInstruction, stepDirection), 0.5);
@@ -132,7 +134,7 @@ class Runner extends FlxGroup {
             needle.row >= 0 && needle.row < embroidery.rows) {
           var stitch = embroidery.makeStitch(needle.col, needle.row, program.getThreadColor(currentCard));
           add(stitch);
-          switchState(STITCH(stitch), 1.0, "Stitching...");
+          switchState(STITCH(stitch), 1.0, "Painting...");
         } else {
           switchState(STITCH_END);
         }
@@ -182,15 +184,15 @@ class Runner extends FlxGroup {
           nextStepDirection = instruction.colDelta;
         }
         if (instruction.jump && instruction.up) {
-          var nextCard = (currentCard + program.numCards - 1) % program.numCards;
+          var nextCard = (currentCard + puzzle.numCards - 1) % puzzle.numCards;
           switchState(NEXT_INSTRUCTION(nextCard, currentInstruction, nextStepDirection), 0.5);
         } else if (instruction.jump && instruction.down) {
-          var nextCard = (currentCard + 1) % program.numCards;
+          var nextCard = (currentCard + 1) % puzzle.numCards;
           switchState(NEXT_INSTRUCTION(nextCard, currentInstruction, nextStepDirection), 0.5);
         } else {
           // XXX duplicated above
           var nextInstruction = currentInstruction + nextStepDirection;
-          if (nextInstruction < 0 || nextInstruction >= program.cardSize) {
+          if (nextInstruction < 0 || nextInstruction >= puzzle.cardSize) {
             switchState(DONE, "Done");
           } else {
             switchState(NEXT_INSTRUCTION(currentCard, nextInstruction, nextStepDirection), 0.5);
