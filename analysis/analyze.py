@@ -26,8 +26,13 @@ for user in users.values():
         duration = datetime.strptime(user['last'], format) - datetime.strptime(user['first'], format)
     user['duration'] = duration
 
-for uid, user in sorted(list(users.items()), key=lambda item: item[1]['duration'] or timedelta(0)):
-    if uid == '1472476898065-1538298449':
+# sort_key = lambda user: user['duration'] or timedelta(0)
+sort_key = lambda user: len(user['solved'])
+for uid, user in sorted(list(users.items()), key=lambda item: sort_key(item[1])):
+    if uid in [
+            '1472476898065-1538298449', # me on localhost:3000
+            '1472482568272-1141491148', # me on leonardo.frozenfractal.com
+        ]:
         continue
     print('{:24}\tduration: {}\tlast: {}\n\t\t\t\t{}'.format(
         uid, user['duration'], user['last'], user['solved']))
