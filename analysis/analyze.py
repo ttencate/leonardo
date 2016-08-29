@@ -26,7 +26,7 @@ for user in users.values():
         duration = datetime.strptime(user['last'], format) - datetime.strptime(user['first'], format)
     user['duration'] = duration
 
-for uid, user in sorted(list(users.items()), key=lambda item: item[1]['duration'] or timedelta(0), reverse=True):
+for uid, user in sorted(list(users.items()), key=lambda item: item[1]['duration'] or timedelta(0)):
     if uid == '1472476898065-1538298449':
         continue
     print('{:24}\tduration: {}\tlast: {}\n\t\t\t\t{}'.format(
