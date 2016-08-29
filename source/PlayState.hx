@@ -510,7 +510,8 @@ class PlayState extends FlxState {
   }
 
   private function programUrl(): String {
-    return Url.base() + "#" + puzzle.name + "," + StringTools.urlEncode(program.toJson());
+    return Url.base() + "#" + puzzle.name + "," +
+      StringTools.replace(StringTools.urlEncode(program.toJson()), "%2C", ",");
   }
 
   private function onWheelButtonClick(index: Int) {
