@@ -61,6 +61,7 @@
 		window.uploadSolution = function(uid, puzzleName, solutionUrl, holeCount, cycleCount) {
 			firebase.database().ref('solutions').push({
 				uid: uid,
+				time: new Date().toUTCString(),
 				puzzleName: puzzleName,
 				solutionUrl: solutionUrl,
 				holeCount: holeCount,
