@@ -16,6 +16,10 @@ class Main extends Sprite {
     addChild(new FlxGame(0, 0, null, 1, 60, 60, true));
     FlxG.switchState(createStartState());
 
+    FlxG.keys.preventDefaultKeys = [
+      UP, DOWN, LEFT, RIGHT, SPACE, ENTER, ESCAPE, F1, PAGEUP, PAGEDOWN,
+    ];
+
     FlxG.mouse.useSystemCursor = true;
 #if neko
     FlxG.resizeWindow(Math.round(FlxG.width * FlxG.camera.zoom), Math.round(FlxG.height * FlxG.camera.zoom));
@@ -73,7 +77,7 @@ class Main extends Sprite {
 #if neko
 class DebugKeys extends FlxBasic {
   override public function update(elapsed: Float) {
-    if (FlxG.keys.justPressed.ESCAPE) {
+    if (FlxG.keys.justPressed.Q) {
       Lib.exit();
     }
     super.update(elapsed);

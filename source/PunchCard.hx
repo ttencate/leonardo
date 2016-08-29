@@ -13,13 +13,13 @@ class PunchCard extends FlxSpriteGroup {
 
   private var puzzle: Puzzle;
   private var program: Program;
-  private var number: Int;
+  public var number(default, null): Int;
   private var help: HelpText;
 
   public var paddingX(default, null): Float = 94;
   public var paddingY(default, null): Float = 0;
-  private var rows: Int;
-  private var cols: Int;
+  public var rows(default, null): Int;
+  public var cols(default, null): Int;
 
   public var holeWidth(default, null): Int;
   public var holeHeight(default, null): Int;
@@ -27,7 +27,6 @@ class PunchCard extends FlxSpriteGroup {
   private var colHighlight: FlxSprite;
   private var rowHighlight: FlxSprite;
   private var colorHighlight: FlxSprite;
-  private static var dragType: Bool = true;
 
   private var holes: Array<FlxSprite>;
 
@@ -59,9 +58,11 @@ class PunchCard extends FlxSpriteGroup {
 
     colHighlight = makeColHighlight();
     colHighlight.y = paddingY;
+    colHighlight.visible = false;
     add(colHighlight);
     rowHighlight = new ColorSprite(30 + cols * holeWidth, holeHeight, highlightColor);
     rowHighlight.x = paddingX - 30;
+    rowHighlight.visible = false;
     add(rowHighlight);
 
     holes = [for (i in 0...(rows*cols)) null];
@@ -103,25 +104,8 @@ class PunchCard extends FlxSpriteGroup {
     var y = FlxG.mouse.y;
     var col = Math.floor((x - this.x - paddingX) / holeWidth);
     var row = Math.floor((y - this.y - paddingY) / holeHeight);
-    if (col >= 0 && col < cols && row >= 0 && row < rows && isRowEnabled(row)) {
-      colHighlight.visible = true;
-      rowHighlight.visible = true;
-      colHighlight.x = this.x + paddingX + col * holeWidth;
-      rowHighlight.y = this.y + paddingY + row * holeHeight;
-      if (FlxG.mouse.justPressed) {
-        dragType = !program.cards[number][col].holes[row];
-      }
-      if (FlxG.mouse.pressed) {
-        setHole(col, row, dragType);
-      } else if (FlxG.mouse.pressedRight) {
-        setHole(col, row, false);
-      }
-      help.set(program.cards[number][col].toString());
-    } else if (col >= -3 && col < cols && row >= 0 && row < rows && isRowEnabled(row)) {
+    if (col >= -3 && col < 0 && row >= 0 && row < rows && isRowEnabled(row)) {
       help.set(Instruction.helpForRow(row));
-    } else {
-      colHighlight.visible = false;
-      rowHighlight.visible = false;
     }
 
     var ch = colorHighlight;
@@ -139,14 +123,26 @@ class PunchCard extends FlxSpriteGroup {
     }
   }
 
-  private function setHole(col: Int, row: Int, hole: Bool) {
+  public function setCursor(col: Null<Int>, row: Null<Int>) {
+    if (col == null || row == null) {
+      colHighlight.visible = false;
+      rowHighlight.visible = false;
+    } else {
+      colHighlight.visible = true;
+      rowHighlight.visible = true;
+      colHighlight.x = this.x + paddingX + col * holeWidth;
+      rowHighlight.y = this.y + paddingY + row * holeHeight;
+    }
+  }
+
+  public function setHole(col: Int, row: Int, hole: Bool) {
     var index = row * cols + col;
     if ((holes[index] != null) != hole) {
       toggleHole(col, row);
     }
   }
 
-  private function toggleHole(col: Int, row: Int) {
+  public function toggleHole(col: Int, row: Int) {
     var index = row * cols + col;
     if (holes[index] != null) {
       remove(holes[index]);

@@ -22,7 +22,7 @@ class Puzzles {
           .setCards(1, 30)
           .setNumWheels(0)
           .setFeatures([])
-          .setText("The machine stops when it runs off the edge of a punch card. It also stops as soon as the painting is done."),
+          .setText("The machine stops when it runs off the edge of a punch card. It also stops as soon as the painting is done.\nTip: press F1 to get help on keyboard shortcuts."),
 
         new Puzzle("5x5_horizontal_stripes", AssetPaths.puzzle_5x5_horizontal_stripes__png)
           .setTitle("Railway")

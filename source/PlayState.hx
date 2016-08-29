@@ -47,6 +47,15 @@ class PlayState extends FlxState {
   private var speed: Float = 1;
   private var complete: Bool = false;
 
+  private var cursorCard: Null<Int>;
+  private var cursorCol: Null<Int>;
+  private var cursorRow: Null<Int>;
+  private var dragType: Bool = true;
+
+  private var inputEnabled: Bool = true;
+  private var prevMouseX: Int;
+  private var prevMouseY: Int;
+
   public function new(puzzle: Puzzle, ?programJson: String) {
     super();
     this.puzzle = puzzle;
@@ -186,6 +195,8 @@ class PlayState extends FlxState {
 
     updateStatusText();
     showTooltips();
+    handleMouse();
+    handleKeys();
 
     var debugSolve = false;
 #if neko
@@ -194,7 +205,7 @@ class PlayState extends FlxState {
     if (!complete && ((runner != null && runner.isSolved()) || debugSolve)) {
       win();
     }
-    if (complete && FlxG.mouse.justPressed) {
+    if (complete && (FlxG.mouse.justPressed || FlxG.keys.firstPressed() != -1)) {
       Main.fadeState(new MenuState());
     }
   }
@@ -209,12 +220,175 @@ class PlayState extends FlxState {
     }
   }
 
+  private function handleMouse() {
+    if (!inputEnabled) {
+      return;
+    }
+
+    var x = FlxG.mouse.x;
+    var y = FlxG.mouse.y;
+    var mouseMoved = (x != prevMouseX || y != prevMouseY);
+    prevMouseX = x;
+    prevMouseY = y;
+
+    if (mouseMoved || FlxG.mouse.pressed || FlxG.mouse.pressedRight) {
+      cursorCard = null;
+      cursorCol = null;
+      cursorRow = null;
+      for (card in punchCards) {
+        var col = Math.floor((x - card.x - card.paddingX) / card.holeWidth);
+        var row = Math.floor((y - card.y - card.paddingY) / card.holeHeight);
+        if (col >= 0 && col < card.cols && row >= 0 && row < card.rows && card.isRowEnabled(row)) {
+          cursorCard = card.number;
+          cursorCol = col;
+          cursorRow = row;
+        }
+      }
+      updateCursor();
+    }
+
+    if (cursorCard != null && cursorRow != null && cursorCol != null) {
+      var card = punchCards[cursorCard];
+      var instruction = program.cards[cursorCard][cursorCol];
+      if (FlxG.mouse.justPressed) {
+        dragType = !instruction.holes[cursorRow];
+      }
+      if (FlxG.mouse.pressed) {
+        card.setHole(cursorCol, cursorRow, dragType);
+      } else if (FlxG.mouse.pressedRight) {
+        card.setHole(cursorCol, cursorRow, false);
+      }
+      help.set(instruction.toString());
+    }
+  }
+
+  private function updateCursor() {
+    for (card in punchCards) {
+      if (inputEnabled && card.number == cursorCard) {
+        card.setCursor(cursorCol, cursorRow);
+      } else {
+        card.setCursor(null, null);
+      }
+    }
+  }
+
+  private function handleKeys() {
+    if (FlxG.keys.justPressed.ENTER) {
+      onRunStopClick();
+    }
+    if (FlxG.keys.justPressed.ESCAPE) {
+      if (runner != null) {
+        onRunStopClick();
+      }
+    }
+    if (FlxG.keys.justPressed.F1) {
+      openSubState(new KeyboardHelpState());
+    }
+    if (FlxG.keys.justPressed.ONE) {
+      onSpeedButtonClick(0);
+    }
+    if (FlxG.keys.justPressed.TWO) {
+      onSpeedButtonClick(1);
+    }
+    if (FlxG.keys.justPressed.THREE) {
+      onSpeedButtonClick(2);
+    }
+    if (FlxG.keys.justPressed.FOUR) {
+      onSpeedButtonClick(3);
+    }
+    if (inputEnabled) {
+      if (FlxG.keys.justPressed.UP || FlxG.keys.justPressed.W || FlxG.keys.justPressed.Z) {
+        moveCursor(0, -1);
+      }
+      if (FlxG.keys.justPressed.DOWN || FlxG.keys.justPressed.S) {
+        moveCursor(0, 1);
+      }
+      if (FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.A) {
+        moveCursor(-1, 0);
+      }
+      if (FlxG.keys.justPressed.RIGHT || FlxG.keys.justPressed.D) {
+        moveCursor(1, 0);
+      }
+      if (FlxG.keys.justPressed.SPACE) {
+        toggleHole();
+      }
+      if (FlxG.keys.justPressed.PAGEUP) {
+        tickWheel(0, FlxG.keys.pressed.SHIFT ? -1 : 1);
+      }
+      if (FlxG.keys.justPressed.PAGEDOWN) {
+        tickWheel(1, FlxG.keys.pressed.SHIFT ? -1 : 1);
+      }
+    }
+  }
+
+  private function moveCursor(colDirection: Int, rowDirection: Int) {
+    if (cursorCard == null || cursorRow == null || cursorCol == null) {
+      cursorCard = 0;
+      cursorCol = 0;
+      cursorRow = 0;
+    }
+
+    cursorCol = (((cursorCol + colDirection) % puzzle.cardSize) + puzzle.cardSize) % puzzle.cardSize;
+
+    if (rowDirection > 0) {
+      do {
+        cursorRow++;
+        if (cursorRow >= punchCards[cursorCard].rows) {
+          cursorCard++;
+          if (cursorCard >= punchCards.length) {
+            cursorCard = 0;
+          }
+          cursorRow = 0;
+        }
+      } while (!punchCards[cursorCard].isRowEnabled(cursorRow));
+    } else if (rowDirection < 0) {
+      do {
+        cursorRow--;
+        if (cursorRow < 0) {
+          cursorCard--;
+          if (cursorCard < 0) {
+            cursorCard = punchCards.length - 1;
+          }
+          cursorRow = punchCards[cursorCard].rows - 1;
+        }
+      } while (!punchCards[cursorCard].isRowEnabled(cursorRow));
+    } else {
+      while (!punchCards[cursorCard].isRowEnabled(cursorRow)) {
+        cursorRow++;
+        if (cursorRow >= punchCards[cursorCard].rows) {
+          cursorCard++;
+          if (cursorCard >= punchCards.length) {
+            cursorCard = 0;
+          }
+          cursorRow = 0;
+        }
+      }
+    }
+
+    updateCursor();
+  }
+
+  private function toggleHole() {
+    if (cursorCard != null && cursorCol != null && cursorRow != null) {
+      punchCards[cursorCard].toggleHole(cursorCol, cursorRow);
+    }
+  }
+
+  private function tickWheel(wheelIndex: Int, delta: Int) {
+    if (wheelIndex >= 0 && wheelIndex < wheels.length) {
+      var wheel = wheels[wheelIndex];
+      wheel.value += delta;
+      wheel.moveToValue(wheel.value);
+      program.wheelStarts[wheelIndex] = wheel.value;
+    }
+  }
+
   private function showTooltips() {
     if (runStopButton.mouseIsOver) {
       if (runner != null) {
-        help.set("Abort the run and reset the machine");
+        help.set("Abort the run and reset the machine (Enter/Esc)");
       } else {
-        help.set("Run the program");
+        help.set("Run the program (Enter)");
       }
     } else if (backButton.mouseIsOver) {
       help.set("Back to main menu");
@@ -225,10 +399,10 @@ class PlayState extends FlxState {
         var button = speedButtons[i];
         if (button.mouseIsOver) {
           help.set([
-            "Pause program execution",
-            "Run program at 1x speed",
-            "Run program at 5x speed",
-            "Run program at 25x speed",
+            "Pause program execution (1)",
+            "Run program at 1x speed (2)",
+            "Run program at 5x speed (3)",
+            "Run program at 25x speed (4)",
           ][i]);
         }
       }
@@ -345,6 +519,7 @@ class PlayState extends FlxState {
   }
 
   private function enableInput(enabled: Bool) {
+    this.inputEnabled = enabled;
     for (punchCard in punchCards) {
       punchCard.inputEnabled = enabled;
     }
