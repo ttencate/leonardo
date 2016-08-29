@@ -43,6 +43,34 @@
 	<script type="text/javascript">
 		lime.embed ("openfl-content", ::WIN_WIDTH::, ::WIN_HEIGHT::, "::WIN_FLASHBACKGROUND::");
 	</script>
+
+	<script src="https://www.gstatic.com/firebasejs/3.3.0/firebase.js"></script>
+	<script>
+		var config = {
+			apiKey: "AIzaSyBccheJd_tsJin7MxTmgn1ICm3GfPWApbQ",
+			authDomain: "leonardo-99d0d.firebaseapp.com",
+			databaseURL: "https://leonardo-99d0d.firebaseio.com",
+			storageBucket: "leonardo-99d0d.appspot.com",
+		};
+		firebase.initializeApp(config);
+
+		firebase.auth().signInAnonymously().catch(function(error) {
+			console.error("sign-in error " + errorCode + ": " + errorMessage);
+		});
+
+		window.uploadSolution = function(uid, puzzleName, solutionUrl, holeCount, cycleCount) {
+			firebase.database().ref('solutions').push({
+				uid: uid,
+				puzzleName: puzzleName,
+				solutionUrl: solutionUrl,
+				holeCount: holeCount,
+				cycleCount: cycleCount
+			}).then(function onResolve() {
+			}, function onReject() {
+				console.error("write failed", arguments);
+			});
+		};
+	</script>
 	
 </body>
 </html>

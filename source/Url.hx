@@ -1,5 +1,7 @@
 package;
 
+import flixel.FlxG;
+
 class Url {
 
   public static function base(): String {
@@ -35,5 +37,24 @@ class Url {
 #else
     trace("Would set location to:", location);
 #end
+  }
+
+  public static function uploadSolution(puzzleName: String, programUrl: String, holeCount: Int, cycleCount: Int) {
+    var uid = getUid();
+#if html5
+    untyped window.uploadSolution(uid, puzzleName, programUrl, holeCount, cycleCount);
+#else
+    trace("Would upload solution:", uid, puzzleName, programUrl, holeCount, cycleCount);
+#end
+  }
+
+  private static function getUid() {
+    var uid = FlxG.save.data.uid;
+    if (uid == null) {
+      uid = Date.now().getTime() + "-" + FlxG.random.int();
+      FlxG.save.data.uid = uid;
+      FlxG.save.flush();
+    }
+    return uid;
   }
 }

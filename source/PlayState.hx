@@ -415,6 +415,7 @@ class PlayState extends FlxState {
     Reflect.setField(FlxG.save.data, "solved_" + puzzle.name, true);
     FlxG.save.flush();
 
+    var holeCount = program.countHoles();
     var cycleCount = runner.cycleCount;
     runnerGroup.remove(runner);
     runner = null;
@@ -437,7 +438,7 @@ class PlayState extends FlxState {
       FlxTween.tween(titleText, {alpha: 1}, 1.0, {ease: FlxEase.sineInOut});
     }
 
-    var resultText = new FlxText(0, FlxG.height - 48, FlxG.width, 'Completed in ${cycleCount} cycles, using ${program.countHoles()} holes');
+    var resultText = new FlxText(0, FlxG.height - 48, FlxG.width, 'Completed in ${cycleCount} cycles, using ${holeCount} holes');
     resultText.setFormat(AssetPaths.day_roman__ttf, 20, FlxColor.WHITE, CENTER);
     resultText.setBorderStyle(SHADOW, 0x80000000, 2);
     resultText.alpha = 0;
@@ -451,6 +452,8 @@ class PlayState extends FlxState {
     FlxTween.tween(embroidery.scale, {x: s, y: s}, 1.0, {ease: FlxEase.quadInOut});
     FlxTween.tween(embroidery, {x: Math.floor((FlxG.width - embroidery.width) / 2), y: Math.floor((FlxG.height - embroidery.height) / 2)}, 1.0, {ease: FlxEase.quadInOut});
     FlxTween.tween(needle, {y: -needle.height}, 1.0, {ease: FlxEase.quadIn});
+
+    Url.uploadSolution(puzzle.name, programUrl(), holeCount, cycleCount);
   }
 
   public function reset() {
@@ -503,8 +506,11 @@ class PlayState extends FlxState {
   }
 
   private function onLinkClick() {
-    var url = Url.base() + "#" + puzzle.name + "," + StringTools.urlEncode(program.toJson());
-    Url.setLocation(url);
+    Url.setLocation(programUrl());
+  }
+
+  private function programUrl(): String {
+    return Url.base() + "#" + puzzle.name + "," + StringTools.urlEncode(program.toJson());
   }
 
   private function onWheelButtonClick(index: Int) {
