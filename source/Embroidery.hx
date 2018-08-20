@@ -69,11 +69,15 @@ class Embroidery extends FlxSprite {
     }
     for (row in 0...rows) {
       for (col in 0...cols) {
-        if (stitchAt(col, row) == null || stitchAt(col, row) != puzzle.colorAt(col, row)) {
+        if (stitchAt(col, row) == null || !colorsEqual(stitchAt(col, row), puzzle.colorAt(col, row))) {
           return false;
         }
       }
     }
     return true;
+  }
+
+  private static function colorsEqual(a: FlxColor, b: FlxColor) {
+    return Math.abs(a.red - b.red) < 5 && Math.abs(a.green - b.green) < 5 && Math.abs(a.blue - b.blue) < 5;
   }
 }
